@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.peacecraftec</groupId>
+	<artifactId>peacecraft</artifactId>
+	<version>dev-SNAPSHOT</version>
+	<name>Peacecraft</name>
+	<description>The custom plugin providing many features for Peacecraft.</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<!-- Repository locations -->
+	<repositories>
+		<repository>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/repositories/public</url>
+		</repository>
+	</repositories>
+
+	<!-- Dependencies -->
+	<dependencies>
+		<dependency>
+			<groupId>com.peacecraftec</groupId>
+			<artifactId>peacecraftcore</artifactId>
+			<version>dev-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.7.2-R0.3-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.milkbowl.vault</groupId>
+			<artifactId>Vault</artifactId>
+			<version>latest</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldedit</artifactId>
+			<version>latest</version>
+		</dependency>
+		<dependency>
+			<groupId>essentials</groupId>
+			<artifactId>essentials</artifactId>
+			<version>latest</version>
+		</dependency>
+		<dependency>
+			<groupId>lwc</groupId>
+			<artifactId>lwc</artifactId>
+			<version>latest</version>
+		</dependency>
+		<dependency>
+			<groupId>donationpoints</groupId>
+			<artifactId>donationpoints</artifactId>
+			<version>latest</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<defaultGoal>clean install</defaultGoal>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+			</plugin>
+			<!-- JAR dependency addition plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<excludes>
+									<exclude>org.bukkit:bukkit</exclude>
+									<exclude>com.sk89q:worldedit</exclude>
+									<exclude>de.schlichtherle:truezip</exclude>
+									<exclude>com.sk89q:jchronic</exclude>
+									<exclude>rhino:js</exclude>
+									<exclude>junit:junit</exclude>
+									<exclude>net.milkbowl.vault:Vault</exclude>
+									<exclude>org.dynmap:dynmap</exclude>
+									<exclude>essentials:essentials</exclude>
+									<exclude>lwc:lwc</exclude>
+									<exclude>donationpoints:donationpoints</exclude>
+								</excludes>
+							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

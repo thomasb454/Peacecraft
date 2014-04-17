@@ -1,0 +1,90 @@
+package com.peacecraftec.bukkit.chat;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+
+import com.peacecraftec.bukkit.internal.hook.EssentialsAPI;
+import com.peacecraftec.bukkit.internal.hook.VaultAPI;
+import com.peacecraftec.web.chat.data.ChannelAction;
+import com.peacecraftec.web.chat.data.WebMessage;
+
+public class WebchatTask implements Runnable {
+
+	private static final List<String> COMMANDS = Arrays.asList("/mute", "/kick", "/ban", "/unban", "/tempban", "/banip", "/unbanip");
+	
+	private PeacecraftChat module;
+	
+	public WebchatTask(PeacecraftChat module) {
+		this.module = module;
+	}
+	
+	@Override
+	public void run() {
+		for(WebMessage chat : this.module.getIncoming()) {
+			if(EssentialsAPI.isBanned(chat.getPlayer()) || EssentialsAPI.isMuted(chat.getPlayer())) {
+				continue;
+			}
+			
+			UUID uuid = this.module.getManager().getUUID(chat.getPlayer());
+			if(uuid == null) {
+				continue;
+			}
+			
+			String message = chat.getMessage().trim().replace("§", "");
+			WebchatSender sender = new WebchatSender(this.module, uuid, chat.getPlayer());
+			if(message.startsWith("/") && sender.hasPermission(ChatPermissions.MOD)) {
+				int ind = message.indexOf(" ");
+				String cmdname = message.substring(0, ind != -1 ? ind : message.length()).trim().toLowerCase();
+				if(COMMANDS.contains(cmdname)) {
+					this.module.getLogger().info(sender.getName() + " dispatched webchat command: " + message.substring(1, message.length()));
+					Bukkit.getServer().dispatchCommand(sender, message.substring(1, message.length()));
+					return;
+				}
+			}
+			
+			if(VaultAPI.getPermissions().has(this.module.getManager().getDefaultWorld(), chat.getPlayer(), ChatPermissions.CHAT_COLOR)) {
+				message = ChatUtil.translateColor(message);
+			}
+
+			if(VaultAPI.getPermissions().has(this.module.getManager().getDefaultWorld(), chat.getPlayer(), ChatPermissions.CHAT_MAGIC)) {
+				message = message.replaceAll("&[kK]", ChatColor.COLOR_CHAR + "k");
+			}
+
+			if(VaultAPI.getPermissions().has(this.module.getManager().getDefaultWorld(), chat.getPlayer(), ChatPermissions.CHAT_FORMAT)) {
+				message = ChatUtil.translateFormat(message);
+			}
+			
+			if(ChatColor.stripColor(chat.getMessage()).trim().equals("")) {
+				return;
+			}
+
+			String displayName = ChatColor.DARK_GRAY + "[WEB] " + ChatColor.RESET + this.module.getDisplayName(chat.getPlayer(), this.module.getManager().getDefaultWorld());
+			String format = "%1$s" + ChatColor.RESET + " " + ChatUtil.formatChannelName(chat.getTo()) + ": %2$s";
+			if(message.toLowerCase().startsWith("/me ") && !message.toLowerCase().endsWith("/me ")) {
+				format = ChatColor.DARK_PURPLE + " * " + ChatColor.RESET + "%1$s" + ChatColor.RESET + " " + ChatUtil.formatChannelName(chat.getTo()) + ChatColor.DARK_PURPLE + " %2$s";
+				message = message.replaceFirst("/me ", "");
+			}
+			
+			this.module.sendToChannel(chat.getPlayer(), chat.getTo(), String.format(format, displayName, message));
+		}
+		
+		for(ChannelAction action : this.module.getChannelActions()) {
+			String displayName = ChatColor.DARK_GRAY + "[WEB] " + ChatColor.RESET + this.module.getDisplayName(action.getPlayer(), this.module.getManager().getDefaultWorld());
+			if(action.getAction() == ChannelAction.Action.JOIN) {
+				this.module.getChannelData(action.getPlayer()).addChannel(action.getChannel());
+				this.module.getChannelData(action.getPlayer()).setActiveChannel(action.getChannel());
+				this.module.sendToChannel(null, action.getChannel(), "chat.player-joined-channel", displayName, action.getChannel().toLowerCase());
+			} else if(action.getAction() == ChannelAction.Action.LEAVE) {
+				this.module.sendToChannel(null, action.getChannel(), "chat.player-left-channel", displayName, action.getChannel().toLowerCase());
+				this.module.getChannelData(action.getPlayer()).removeChannel(action.getChannel());
+			} else if(action.getAction() == ChannelAction.Action.CHANGED_ACTIVE) {
+				this.module.getChannelData(action.getPlayer()).setActiveChannel(action.getChannel());
+			}
+		}
+	}
+
+}
