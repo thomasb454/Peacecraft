@@ -9,7 +9,7 @@ public class ExpUtil {
 	private static int xpTotalToReachLevel[];
 
 	static {
-		initLookupTables(25);
+		initLookupTables(50);
 	}
 
 	private static void initLookupTables(int maxLevel) {
