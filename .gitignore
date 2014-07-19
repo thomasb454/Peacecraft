@@ -2,3 +2,6 @@
 .metadata/*
 .git
 .git/*
+*.iml
+.idea
+.idea/*

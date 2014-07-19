@@ -1,15 +1,5 @@
 package com.peacecraftec.bukkit.internal.module;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import com.peacecraftec.bukkit.chat.PeacecraftChat;
 import com.peacecraftec.bukkit.internal.module.cmd.BukkitCommandManager;
 import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitPlayerSender;
@@ -22,6 +12,16 @@ import com.peacecraftec.module.cmd.sender.PlayerSender;
 import com.peacecraftec.module.event.EventManager;
 import com.peacecraftec.module.permission.PermissionManager;
 import com.peacecraftec.module.scheduler.Scheduler;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class BukkitModuleManager extends ModuleManager {
 
@@ -103,10 +103,12 @@ public class BukkitModuleManager extends ModuleManager {
 
 	@Override
 	public PlayerSender[] getPlayerSenders() {
-		Player players[] = Bukkit.getServer().getOnlinePlayers();
-		PlayerSender ret[] = new PlayerSender[players.length];
-		for(int index = 0; index < players.length; index++) {
-			ret[index] = new BukkitPlayerSender(players[index], this.getLanguageManager());
+		Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+		PlayerSender ret[] = new PlayerSender[players.size()];
+		int index = 0;
+		for(Player player : players) {
+			ret[index] = new BukkitPlayerSender(player, this.getLanguageManager());
+			index++;
 		}
 		
 		return ret;

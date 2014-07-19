@@ -1,9 +1,8 @@
 package com.peacecraftec.redis;
 
-import com.lambdaworks.redis.pubsub.RedisPubSubAdapter;
+import redis.clients.jedis.JedisPubSub;
 
-public class PeacePubSub extends RedisPubSubAdapter<String, String> {
-
+public class PeacePubSub extends JedisPubSub {
 	private RedisPubSub parent;
 	
 	protected PeacePubSub(RedisPubSub parent) {
@@ -11,18 +10,29 @@ public class PeacePubSub extends RedisPubSubAdapter<String, String> {
 	}
 
 	@Override
-	public void message(String channel, String message) {
+	public void onMessage(String channel, String message) {
 		this.parent.recieve(channel, message);
 	}
-	
+
 	@Override
-	public void subscribed(String channel, long count) {
+	public void onSubscribe(String channel, int count) {
 		this.parent.onSubscribe(channel, count);
 	}
 
 	@Override
-	public void unsubscribed(String channel, long count) {
+	public void onUnsubscribe(String channel, int count) {
 		this.parent.onUnsubscribe(channel, count);
 	}
 
+	@Override
+	public void onPMessage(String pattern, String channel, String message) {
+	}
+
+	@Override
+	public void onPUnsubscribe(String pattern, int count) {
+	}
+
+	@Override
+	public void onPSubscribe(String pattern, int count) {
+	}
 }

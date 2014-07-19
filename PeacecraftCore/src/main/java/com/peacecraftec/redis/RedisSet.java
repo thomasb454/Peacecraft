@@ -15,11 +15,7 @@ public class RedisSet {
 	public String getName() {
 		return this.name;
 	}
-	
-	public RedisDatabase getDatabase() {
-		return this.db;
-	}
-	
+
 	public boolean exists() {
 		return this.db.getRedis().exists(this.name);
 	}

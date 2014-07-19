@@ -123,6 +123,9 @@ chat:
     no-staff-online: '&cNo staff members are online.'
     staff-count-singular: '&6There is &c%s&6 staff member online.'
     staff-count-plural: '&6There are &c%s&6 staff members online.'
+    muted: '&cYou are muted.'
+    player-muted: '&a%s&a has been muted.'
+    player-unmuted: '&a%s&a has been unmuted.'
 donation:
     donated: '%s&a has donated $%s&a!'
 extras:

@@ -1,16 +1,9 @@
 package com.peacecraftec.bukkit;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.peacecraftec.bukkit.backup.PeacecraftBackup;
 import com.peacecraftec.bukkit.chat.PeacecraftChat;
 import com.peacecraftec.bukkit.core.PeacecraftCore;
-import com.peacecraftec.bukkit.donation.PeacecraftDonation;
-import com.peacecraftec.bukkit.eco.PeacecraftEco;
-import com.peacecraftec.bukkit.extras.PeacecraftExtras;
-import com.peacecraftec.bukkit.internal.hook.VaultAPI;
 import com.peacecraftec.bukkit.internal.module.BukkitModuleManager;
-import com.peacecraftec.bukkit.lots.PeacecraftLots;
 import com.peacecraftec.bukkit.perms.PeacecraftPerms;
 import com.peacecraftec.bukkit.portals.PeacecraftPortals;
 import com.peacecraftec.bukkit.restrictions.PeacecraftRestrictions;
@@ -18,6 +11,7 @@ import com.peacecraftec.bukkit.stats.PeacecraftStats;
 import com.peacecraftec.bukkit.worlds.PeacecraftWorlds;
 import com.peacecraftec.module.ModuleManager;
 import com.peacecraftec.storage.yaml.YamlStorage;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Peacecraft extends JavaPlugin {
 
@@ -29,17 +23,12 @@ public class Peacecraft extends JavaPlugin {
 		this.modules = new BukkitModuleManager(this);
 		this.modules.load(new PeacecraftCore(this.modules));
 		this.modules.load(new PeacecraftWorlds(this.modules));
-		this.modules.load(new PeacecraftEco(this.modules));
-		this.modules.load(new PeacecraftDonation(this.modules));
 		this.modules.load(new PeacecraftPerms(this.modules));
 		this.modules.load(new PeacecraftChat(this.modules));
 		this.modules.load(new PeacecraftBackup(this.modules));
 		this.modules.load(new PeacecraftRestrictions(this.modules));
-		this.modules.load(new PeacecraftExtras(this.modules));
-		this.modules.load(new PeacecraftLots(this.modules));
 		this.modules.load(new PeacecraftPortals(this.modules));
 		this.modules.load(new PeacecraftStats(this.modules));
-		VaultAPI.hook();
 	}
 	
 	@Override

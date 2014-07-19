@@ -1,21 +1,14 @@
 package com.peacecraftec.bukkit.perms.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
+import com.peacecraftec.bukkit.chat.PeacecraftChat;
+import com.peacecraftec.bukkit.perms.PeacecraftPerms;
+import com.peacecraftec.storage.Storage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
-import com.peacecraftec.bukkit.chat.PeacecraftChat;
-import com.peacecraftec.bukkit.donation.PeacecraftDonation;
-import com.peacecraftec.bukkit.perms.PeacecraftPerms;
-import com.peacecraftec.storage.Storage;
+import java.util.*;
 
 public class PermissionPlayer {
 
@@ -240,13 +233,6 @@ public class PermissionPlayer {
 		}
 		
 		perms.putAll(this.getOwnPermissions());
-		if(this.module.getManager().isEnabled("Donation")) {
-			PeacecraftDonation donation = (PeacecraftDonation) this.module.getManager().getModule("Donation");
-			if(donation.getStorage().isDonor(this.getName())) {
-				perms.putAll(donation.getDonorPermissions());
-			}
-		}
-		
 		return perms;
 	}
 	

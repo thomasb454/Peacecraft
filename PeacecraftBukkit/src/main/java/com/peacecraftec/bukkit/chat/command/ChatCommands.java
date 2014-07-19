@@ -1,22 +1,20 @@
 package com.peacecraftec.bukkit.chat.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import com.peacecraftec.module.cmd.sender.CommandSender;
-import com.peacecraftec.module.cmd.sender.PlayerSender;
+import com.peacecraftec.bukkit.chat.ChatPermissions;
 import com.peacecraftec.bukkit.chat.ChatUtil;
 import com.peacecraftec.bukkit.chat.PeacecraftChat;
-import com.peacecraftec.bukkit.chat.ChatPermissions;
-import com.peacecraftec.bukkit.internal.hook.EssentialsAPI;
 import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
 import com.peacecraftec.module.cmd.Command;
 import com.peacecraftec.module.cmd.Executor;
+import com.peacecraftec.module.cmd.sender.CommandSender;
+import com.peacecraftec.module.cmd.sender.PlayerSender;
 import com.peacecraftec.web.chat.data.ChannelData;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ChatCommands extends Executor {
 	
@@ -96,7 +94,8 @@ public class ChatCommands extends Executor {
 	
 	@Command(aliases = {"me", "emote"}, desc = "Sends an emote message.", usage = "<message>", min = 1, permission = ChatPermissions.ME)
 	public void me(CommandSender sender, String command, String args[]) {
-		if(sender instanceof PlayerSender && EssentialsAPI.isMuted(sender.getName())) {
+		if(sender instanceof PlayerSender && this.module.isMuted(sender.getName())) {
+			sender.sendMessage("chat.muted");
 			return;
 		}
 		
@@ -262,6 +261,48 @@ public class ChatCommands extends Executor {
 	public void chatpass(CommandSender sender, String command, String args[]) {
 		String res = this.module.setPassword(sender.getName(), args[0]);
 		sender.sendMessage("chat.webchat-set", res);
+	}
+
+	@Command(aliases = {"mute"}, desc = "Mutes a player.", usage = "<player>", min = 1, permission = ChatPermissions.MUTE)
+	public void mute(CommandSender sender, String command, String args[]) {
+		if(sender instanceof PlayerSender && this.module.isMuted(sender.getName())) {
+			sender.sendMessage("chat.muted");
+			return;
+		}
+
+		List<PlayerSender> matches = this.module.getManager().matchPlayerSender(args[0]);
+		if(matches.size() == 0) {
+			sender.sendMessage("generic.player-not-found");
+			return;
+		} else if(matches.size() > 1) {
+			sender.sendMessage("generic.multiple-players");
+			return;
+		}
+
+		PlayerSender player = matches.get(0);
+		this.module.setMuted(player.getName(), true);
+		sender.sendMessage("chat.player-muted");
+	}
+
+	@Command(aliases = {"unmute"}, desc = "Unmutes a player.", usage = "<player>", min = 1, permission = ChatPermissions.MUTE)
+	public void unmute(CommandSender sender, String command, String args[]) {
+		if(sender instanceof PlayerSender && this.module.isMuted(sender.getName())) {
+			sender.sendMessage("chat.muted");
+			return;
+		}
+
+		List<PlayerSender> matches = this.module.getManager().matchPlayerSender(args[0]);
+		if(matches.size() == 0) {
+			sender.sendMessage("generic.player-not-found");
+			return;
+		} else if(matches.size() > 1) {
+			sender.sendMessage("generic.multiple-players");
+			return;
+		}
+
+		PlayerSender player = matches.get(0);
+		this.module.setMuted(player.getName(), false);
+		sender.sendMessage("chat.player-unmuted");
 	}
 	
 	private static String join(String split[], String sep) {

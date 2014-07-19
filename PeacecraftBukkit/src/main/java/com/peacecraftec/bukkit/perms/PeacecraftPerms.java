@@ -1,28 +1,24 @@
 package com.peacecraftec.bukkit.perms;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-
-import com.peacecraftec.module.Module;
-import com.peacecraftec.module.ModuleManager;
 import com.peacecraftec.bukkit.chat.ChatPermissions;
 import com.peacecraftec.bukkit.chat.PeacecraftChat;
-import com.peacecraftec.bukkit.internal.hook.VaultAPI;
 import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
 import com.peacecraftec.bukkit.perms.command.PermsCommands;
 import com.peacecraftec.bukkit.perms.core.PermissionManager;
 import com.peacecraftec.bukkit.perms.core.PermissionPlayer;
 import com.peacecraftec.bukkit.perms.core.PermissionWorld;
 import com.peacecraftec.bukkit.perms.listener.PermsListener;
-import com.peacecraftec.bukkit.perms.vault.PeaceChatVault;
-import com.peacecraftec.bukkit.perms.vault.PeacePermsVault;
 import com.peacecraftec.bukkit.stats.PeacecraftStats;
+import com.peacecraftec.module.Module;
+import com.peacecraftec.module.ModuleManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PeacecraftPerms extends Module {
 
@@ -36,9 +32,6 @@ public class PeacecraftPerms extends Module {
 	@Override
 	public void onEnable() {
 		this.manager = new PermissionManager(this);
-		PeacePermsVault perms = new PeacePermsVault(this.manager);
-		VaultAPI.setPermissions(perms);
-		VaultAPI.setChat(new PeaceChatVault(perms, this.manager));
 		this.getManager().getPermissionManager().register(this, PermsPermissions.class);
 		this.getManager().getCommandManager().register(this, new PermsCommands(this));
 		this.getManager().getEventManager().register(this, this.listen = new PermsListener(this));
@@ -138,6 +131,20 @@ public class PeacecraftPerms extends Module {
 			} else {
 				chat.setMod(player.getName(), false);
 			}
+		}
+	}
+
+	public boolean hasPermission(String player, String permission) {
+		PermissionPlayer p = this.getPermsManager().getWorld(this.getManager().getDefaultWorld()).getPlayer(player);
+		if(p == null) {
+			return false;
+		}
+
+		Boolean b = p.getAllPermissions().get(permission);
+		if(b != null) {
+			return b;
+		} else {
+			return false;
 		}
 	}
 

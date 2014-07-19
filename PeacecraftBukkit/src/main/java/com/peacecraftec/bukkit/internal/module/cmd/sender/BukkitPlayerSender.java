@@ -17,8 +17,8 @@ public class BukkitPlayerSender extends BukkitCommandSender implements PlayerSen
 	@Override
 	public String getLanguage() {
 		try {
-			Class<?> craftPlayer = Class.forName("org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer");
-			Class<?> entityPlayer = Class.forName("net.minecraft.server.v1_7_R1.EntityPlayer");
+			Class<?> craftPlayer = Class.forName("org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer");
+			Class<?> entityPlayer = Class.forName("net.minecraft.server.v1_7_R3.EntityPlayer");
 			Method getHandle = craftPlayer.getDeclaredMethod("getHandle");
 			Object ent = getHandle.invoke(this.handle);
 			Field locale = entityPlayer.getDeclaredField("locale");

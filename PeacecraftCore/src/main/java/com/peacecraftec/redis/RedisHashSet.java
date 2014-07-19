@@ -1,6 +1,6 @@
 package com.peacecraftec.redis;
 
-import java.util.List;
+import java.util.Set;
 
 public class RedisHashSet {
 
@@ -15,16 +15,12 @@ public class RedisHashSet {
 	public String getName() {
 		return this.name;
 	}
-	
-	public RedisDatabase getDatabase() {
-		return this.db;
-	}
-	
+
 	public boolean exists() {
 		return this.db.getRedis().exists(this.name);
 	}
 	
-	public List<String> getMembers() {
+	public Set<String> getMembers() {
 		return this.db.getRedis().hkeys(this.name);
 	}
 	

@@ -1,38 +1,32 @@
 package com.peacecraftec.redis;
 
-import java.util.List;
+import redis.clients.jedis.Jedis;
 
-import com.lambdaworks.redis.RedisClient;
-import com.lambdaworks.redis.RedisConnection;
+import java.util.Set;
 
 public class RedisDatabase {
-	
-	static {
-		RedisLib.preloadClasses();
-	}
-	
-	private RedisConnection<String, String> redis;
+	private Jedis redis;
 	private boolean create;
 	
 	public RedisDatabase(String host) {
-		RedisClient client = new RedisClient(host);
-		this.redis = client.connect();
+		this.redis = new Jedis(host);
+		this.redis.connect();
 	}
 	
 	public RedisDatabase(String host, int port) {
-		RedisClient client = new RedisClient(host, port);
-		this.redis = client.connect();
+		this.redis = new Jedis(host, port);
+		this.redis.connect();
 	}
 	
-	public RedisConnection<String, String> getRedis() {
+	public Jedis getRedis() {
 		return this.redis;
 	}
 	
-	public List<String> getKeys(String start) {
+	public Set<String> getKeys(String start) {
 		return this.redis.keys(start + ".*");
 	}
 	
-	public List<String> keys(String query) {
+	public Set<String> keys(String query) {
 		return this.redis.keys(query);
 	}
 	
@@ -144,5 +138,4 @@ public class RedisDatabase {
 	public void publish(String channel, String message) {
 		this.redis.publish(channel, message);
 	}
-
 }

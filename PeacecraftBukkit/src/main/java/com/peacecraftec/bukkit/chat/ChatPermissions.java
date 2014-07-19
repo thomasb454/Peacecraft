@@ -43,5 +43,8 @@ public class ChatPermissions implements PermissionContainer {
 
 	@Perm(desc = "Allows players to view the list of online staff members.")
 	public static final String STAFF_LIST = "peacecraft.chat.stafflist";
+
+	@Perm(desc = "Allows players to mute other players.")
+	public static final String MUTE = "peacecraft.chat.mute";
 	
 }

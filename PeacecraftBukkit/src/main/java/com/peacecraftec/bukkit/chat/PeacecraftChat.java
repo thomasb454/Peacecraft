@@ -1,22 +1,11 @@
 package com.peacecraftec.bukkit.chat;
 
-import java.io.File;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import com.peacecraftec.bukkit.chat.command.ChatCommands;
 import com.peacecraftec.bukkit.chat.listener.ChatListener;
-import com.peacecraftec.bukkit.donation.PeacecraftDonation;
+import com.peacecraftec.bukkit.perms.PeacecraftPerms;
 import com.peacecraftec.module.Module;
 import com.peacecraftec.module.ModuleManager;
 import com.peacecraftec.module.cmd.sender.PlayerSender;
-import com.peacecraftec.bukkit.internal.hook.VaultAPI;
-import com.peacecraftec.bukkit.perms.PeacecraftPerms;
 import com.peacecraftec.storage.Storage;
 import com.peacecraftec.storage.yaml.YamlStorage;
 import com.peacecraftec.web.chat.WebchatFactory;
@@ -24,10 +13,20 @@ import com.peacecraftec.web.chat.WebchatSystem;
 import com.peacecraftec.web.chat.data.ChannelAction;
 import com.peacecraftec.web.chat.data.ChannelData;
 import com.peacecraftec.web.chat.data.WebMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Callable;
 
 public class PeacecraftChat extends Module {
 
 	private Storage nicknames;
+	private Storage muted;
 	private WebchatSystem webchat;
 	
 	public PeacecraftChat(ModuleManager manager) {
@@ -39,6 +38,10 @@ public class PeacecraftChat extends Module {
 		this.webchat = WebchatFactory.create(this.getManager());
 		this.nicknames = new YamlStorage(new File(this.getDirectory(), "nicknames.yml").getPath());
 		this.nicknames.load();
+		this.muted = new YamlStorage(new File(this.getDirectory(), "muted.yml").getPath());
+		this.muted.load();
+		this.muted.applyDefault("muted", new ArrayList<String>());
+		this.muted.save();
 		this.getManager().getPermissionManager().register(this, ChatPermissions.class);
 		this.getManager().getCommandManager().register(this, new ChatCommands(this));
 		this.getManager().getEventManager().register(this, new ChatListener(this));
@@ -53,6 +56,8 @@ public class PeacecraftChat extends Module {
 	public void onDisable() {
 		this.nicknames.save();
 		this.nicknames = null;
+		this.muted.save();
+		this.muted = null;
 		this.webchat.cleanup();
 		this.webchat = null;
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -64,29 +69,41 @@ public class PeacecraftChat extends Module {
 	@Override
 	public void reload() {
 		this.nicknames.save();
+		this.muted.save();
 		this.webchat.cleanup();
 		this.webchat = null;
 		this.webchat = WebchatFactory.create(this.getManager());
 		this.nicknames = new YamlStorage(new File(this.getDirectory(), "nicknames.yml").getPath());
 		this.nicknames.load();
+		this.muted = new YamlStorage(new File(this.getDirectory(), "muted.yml").getPath());
+		this.muted.load();
+		this.muted.applyDefault("muted", new ArrayList<String>());
+		this.muted.save();
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
 			this.loadDisplayName(player);
 			this.addOnlinePlayer(player.getName());
 		}
 	}
-	
+
 	public boolean hasName(String player) {
-		this.convert(player); // CONVERSION CODE
-		return this.nicknames.contains(this.getManager().getUUID(player).toString());
+		UUID uuid = this.getManager().getUUID(player);
+		if(uuid != null) {
+			return this.nicknames.contains(uuid.toString());
+		}
+
+		return false;
 	}
 	
 	public String getName(String player) {
 		UUID uuid = this.getManager().getUUID(player);
-		return uuid != null && this.hasName(player) ? this.nicknames.getString(uuid.toString()) : this.getManager().getCasedUsername(player);
+		if(uuid != null && this.hasName(player)) {
+			return this.nicknames.getString(uuid.toString());
+		}
+
+		return this.getManager().getCasedUsername(player);
 	}
 	
 	public void setName(Player player, String name) {
-		this.convert(player.getName()); // CONVERSION CODE
 		UUID uuid = this.getManager().getUUID(player.getName());
 		if(uuid != null) {
 			this.nicknames.setValue(uuid.toString(), name);
@@ -96,10 +113,32 @@ public class PeacecraftChat extends Module {
 	}
 	
 	public void clearName(String player) {
-		this.convert(player); // CONVERSION CODE
 		UUID uuid = this.getManager().getUUID(player);
 		if(uuid != null) {
 			this.nicknames.remove(uuid.toString());
+		}
+	}
+
+	public boolean isMuted(String player) {
+		UUID uuid = this.getManager().getUUID(player);
+		if(uuid != null) {
+			return this.muted.getList("muted", String.class).contains(uuid.toString());
+		}
+
+		return false;
+	}
+
+	public void setMuted(String player, boolean muted) {
+		UUID uuid = this.getManager().getUUID(player);
+		if(uuid != null) {
+			List<String> mute = this.muted.getList("muted", String.class);
+			if(muted) {
+				mute.add(uuid.toString());
+			} else {
+				mute.remove(uuid.toString());
+			}
+
+			this.muted.setValue("muted", mute);
 		}
 	}
 	
@@ -112,12 +151,6 @@ public class PeacecraftChat extends Module {
 		if(this.getManager().getModule("Permissions") != null) {
 			PeacecraftPerms perms = (PeacecraftPerms) this.getManager().getModule("Permissions");
 			name = perms.getPermsManager().getWorld(world).getPlayer(player).getPrefix() + name + perms.getPermsManager().getWorld(world).getPlayer(player).getSuffix();
-		} else if(VaultAPI.getChat() != null) {
-			name = VaultAPI.getChat().getPlayerPrefix(world, player) + name + VaultAPI.getChat().getPlayerSuffix(world, player); 
-		}
-		
-		if(this.getManager().getModule("Donation") != null && ((PeacecraftDonation) this.getManager().getModule("Donation")).getStorage().isDonor(player)) {
-			name = ((PeacecraftDonation) this.getManager().getModule("Donation")).getPrefix() + ChatColor.RESET + name;
 		}
 		
 		return ChatColor.RESET + name + ChatColor.RESET;
@@ -133,10 +166,6 @@ public class PeacecraftChat extends Module {
 			PeacecraftPerms perms = (PeacecraftPerms) this.getManager().getModule("Permissions");
 			String pre = ChatColor.getLastColors(perms.getPermsManager().getWorld(world).getPlayer(player).getPrefix());
 			String suf = ChatColor.getLastColors(perms.getPermsManager().getWorld(world).getPlayer(player).getSuffix());
-			name = pre + name + suf; 
-		} else if(VaultAPI.getChat() != null) {
-			String pre = ChatColor.getLastColors(VaultAPI.getChat().getPlayerPrefix(world, player));
-			String suf = ChatColor.getLastColors(VaultAPI.getChat().getPlayerSuffix(world, player));
 			name = pre + name + suf; 
 		}
 		
@@ -268,21 +297,5 @@ public class PeacecraftChat extends Module {
 	public void setMod(String user, boolean mod) {
 		this.webchat.setMod(user, mod);
 	}
-	
-	// CONVERSION CODE
-	private void convert(String name) {
-		String player = name;
-		UUID uuid = this.getManager().getUUID(player);
-		if(uuid != null) {
-			if(this.nicknames.contains(player)) {
-				this.nicknames.setValue(uuid.toString(), this.nicknames.getString(player));
-				this.nicknames.remove(player);
-				this.nicknames.save();
-			}
-		} else {
-			this.getLogger().severe("Player " + name + " does not have a UUID to convert data to!");
-		}
-	}
-	// END CONVERSION CODE
-	
+
 }

@@ -1,6 +1,6 @@
 package com.peacecraftec.redis;
 
-import java.util.List;
+import java.util.Set;
 
 public class RedisSortedSet {
 
@@ -15,17 +15,13 @@ public class RedisSortedSet {
 	public String getName() {
 		return this.name;
 	}
-	
-	public RedisDatabase getDatabase() {
-		return this.db;
-	}
-	
+
 	public boolean exists() {
 		return this.db.getRedis().exists(this.name);
 	}
 	
-	public List<String> getMembers() {
-		return this.db.getRedis().zrangebyscore(this.name, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+	public Set<String> getMembers() {
+		return this.db.getRedis().zrangeByScore(this.name, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 	}
 	
 	public boolean contains(String member) {

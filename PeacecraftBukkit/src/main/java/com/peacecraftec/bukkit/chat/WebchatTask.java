@@ -1,16 +1,14 @@
 package com.peacecraftec.bukkit.chat;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
+import com.peacecraftec.bukkit.perms.PeacecraftPerms;
+import com.peacecraftec.web.chat.data.ChannelAction;
+import com.peacecraftec.web.chat.data.WebMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import com.peacecraftec.bukkit.internal.hook.EssentialsAPI;
-import com.peacecraftec.bukkit.internal.hook.VaultAPI;
-import com.peacecraftec.web.chat.data.ChannelAction;
-import com.peacecraftec.web.chat.data.WebMessage;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class WebchatTask implements Runnable {
 
@@ -25,7 +23,7 @@ public class WebchatTask implements Runnable {
 	@Override
 	public void run() {
 		for(WebMessage chat : this.module.getIncoming()) {
-			if(EssentialsAPI.isBanned(chat.getPlayer()) || EssentialsAPI.isMuted(chat.getPlayer())) {
+			if(Bukkit.getOfflinePlayer(this.module.getManager().getUUID(chat.getPlayer())).isBanned() || this.module.isMuted(chat.getPlayer())) {
 				continue;
 			}
 			
@@ -46,15 +44,15 @@ public class WebchatTask implements Runnable {
 				}
 			}
 			
-			if(VaultAPI.getPermissions().has(this.module.getManager().getDefaultWorld(), chat.getPlayer(), ChatPermissions.CHAT_COLOR)) {
+			if(((PeacecraftPerms) this.module.getManager().getModule("Permissions")).hasPermission(chat.getPlayer(), ChatPermissions.CHAT_COLOR)) {
 				message = ChatUtil.translateColor(message);
 			}
 
-			if(VaultAPI.getPermissions().has(this.module.getManager().getDefaultWorld(), chat.getPlayer(), ChatPermissions.CHAT_MAGIC)) {
+			if(((PeacecraftPerms) this.module.getManager().getModule("Permissions")).hasPermission(chat.getPlayer(), ChatPermissions.CHAT_MAGIC)) {
 				message = message.replaceAll("&[kK]", ChatColor.COLOR_CHAR + "k");
 			}
 
-			if(VaultAPI.getPermissions().has(this.module.getManager().getDefaultWorld(), chat.getPlayer(), ChatPermissions.CHAT_FORMAT)) {
+			if(((PeacecraftPerms) this.module.getManager().getModule("Permissions")).hasPermission(chat.getPlayer(), ChatPermissions.CHAT_FORMAT)) {
 				message = ChatUtil.translateFormat(message);
 			}
 			

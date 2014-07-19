@@ -1,8 +1,10 @@
 package com.peacecraftec.bukkit.chat.listener;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.peacecraftec.bukkit.chat.ChatPermissions;
+import com.peacecraftec.bukkit.chat.ChatUtil;
+import com.peacecraftec.bukkit.chat.PeacecraftChat;
+import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
+import com.peacecraftec.web.chat.data.ChannelData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,11 +17,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.peacecraftec.bukkit.chat.ChatUtil;
-import com.peacecraftec.bukkit.chat.PeacecraftChat;
-import com.peacecraftec.bukkit.chat.ChatPermissions;
-import com.peacecraftec.bukkit.internal.hook.EssentialsAPI;
-import com.peacecraftec.web.chat.data.ChannelData;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChatListener implements Listener {
 
@@ -78,7 +77,8 @@ public class ChatListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
-		if(EssentialsAPI.isMuted(player.getName())) {
+		if(this.module.isMuted(player.getName())) {
+			BukkitCommandSender.wrap(player, this.module.getManager().getLanguageManager()).sendMessage("chat.muted");
 			event.setCancelled(true);
 			return;
 		}

@@ -1,19 +1,21 @@
 package com.peacecraftec.bukkit.restrictions.listener;
 
-import org.bukkit.GameMode;
+import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
+import com.peacecraftec.bukkit.restrictions.PeacecraftRestrictions;
+import com.peacecraftec.bukkit.restrictions.RestrictionsPermissions;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldLoadEvent;
-
-import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
-import com.peacecraftec.bukkit.restrictions.PeacecraftRestrictions;
-import com.peacecraftec.bukkit.restrictions.RestrictionsPermissions;
 
 public class RestrictionsListener implements Listener {
 
@@ -26,11 +28,6 @@ public class RestrictionsListener implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if(event.getBlock().getType() == Material.BEDROCK && !event.getPlayer().hasPermission(RestrictionsPermissions.BEDROCK)) {
-			event.setCancelled(true);
-			return;
-		}
-		
-		if(event.getPlayer().getName().equals("Little_Rob") && event.getPlayer().getGameMode() == GameMode.CREATIVE && event.getBlockPlaced().getType() == Material.TNT) {
 			event.setCancelled(true);
 			return;
 		}
@@ -87,6 +84,31 @@ public class RestrictionsListener implements Listener {
 		this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".x", 4000);
 		this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".z", 4000);
 		this.module.getConfig().save();
+	}
+
+	@EventHandler
+	public void onExplosionPrime(ExplosionPrimeEvent event) {
+		event.setFire(false);
+		event.setRadius(0);
+		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onEntityExplode(EntityExplodeEvent event) {
+		event.setYield(0);
+		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onBlockSpread(BlockSpreadEvent event) {
+		if(event.getBlock().getType() == Material.FIRE) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onBlockBurn(BlockBurnEvent event) {
+		event.setCancelled(true);
 	}
 	
 }
