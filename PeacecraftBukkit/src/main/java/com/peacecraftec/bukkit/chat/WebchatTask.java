@@ -6,14 +6,10 @@ import com.peacecraftec.web.chat.data.WebMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 public class WebchatTask implements Runnable {
 
-	private static final List<String> COMMANDS = Arrays.asList("/mute", "/kick", "/ban", "/unban", "/tempban", "/banip", "/unbanip");
-	
 	private PeacecraftChat module;
 	
 	public WebchatTask(PeacecraftChat module) {
@@ -33,17 +29,6 @@ public class WebchatTask implements Runnable {
 			}
 			
 			String message = chat.getMessage().trim().replace("§", "");
-			WebchatSender sender = new WebchatSender(this.module, uuid, chat.getPlayer());
-			if(message.startsWith("/") && sender.hasPermission(ChatPermissions.MOD)) {
-				int ind = message.indexOf(" ");
-				String cmdname = message.substring(0, ind != -1 ? ind : message.length()).trim().toLowerCase();
-				if(COMMANDS.contains(cmdname)) {
-					this.module.getLogger().info(sender.getName() + " dispatched webchat command: " + message.substring(1, message.length()));
-					Bukkit.getServer().dispatchCommand(sender, message.substring(1, message.length()));
-					return;
-				}
-			}
-			
 			if(((PeacecraftPerms) this.module.getManager().getModule("Permissions")).hasPermission(chat.getPlayer(), ChatPermissions.CHAT_COLOR)) {
 				message = ChatUtil.translateColor(message);
 			}
