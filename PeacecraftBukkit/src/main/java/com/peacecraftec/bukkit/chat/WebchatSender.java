@@ -29,6 +29,8 @@ public class WebchatSender implements Player {
 	private PeacecraftChat module;
 	private UUID uuid;
 	private String name;
+
+	private WebchatSpigot spigot = new WebchatSpigot();
 	
 	public WebchatSender(PeacecraftChat module, UUID uuid, String name) {
 		this.module = module;
@@ -822,6 +824,11 @@ public class WebchatSender implements Player {
 	}
 
 	@Override
+	public Spigot spigot() {
+		return this.spigot;
+	}
+
+	@Override
 	public int getLevel() {
 		return 0;
 	}
@@ -1153,6 +1160,13 @@ public class WebchatSender implements Player {
 	
 	@Override
 	public void sendSignChange(Location loc, String[] lines) {
+	}
+
+	public static class WebchatSpigot extends Spigot {
+		@Override
+		public String getLocale() {
+			return "en_US";
+		}
 	}
 
 }
