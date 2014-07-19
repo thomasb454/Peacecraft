@@ -1,80 +1,73 @@
 package com.peacecraftec.bukkit.core.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.help.HelpMap;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.help.HelpTopicComparator;
-import org.bukkit.help.IndexHelpTopic;
-import org.bukkit.permissions.Permission;
-import org.bukkit.util.ChatPaginator;
-
 import com.peacecraftec.bukkit.core.CorePermissions;
 import com.peacecraftec.bukkit.core.PeacecraftCore;
-import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
 import com.peacecraftec.module.Module;
 import com.peacecraftec.module.cmd.Command;
 import com.peacecraftec.module.cmd.Executor;
 import com.peacecraftec.module.cmd.sender.CommandSender;
+import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.util.ChatPaginator;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class CoreCommands extends Executor {
-
 	private PeacecraftCore module;
 
 	public CoreCommands(PeacecraftCore module) {
 		this.module = module;
 	}
 	
-	@Command(aliases = {"pload"}, desc = "Reloads a module.", usage = "[modules]", permission = CorePermissions.RELOAD)
-	public void pload(CommandSender sender, String command, String args[]) {
-		if(args.length == 0) {
+	@Command(aliases = {"modules"}, desc = "Manages modules.", usage = "<list/reload> [modules]", min = 1, permission = CorePermissions.MANAGE_MODULES)
+	public void modules(CommandSender sender, String command, String args[]) {
+		if(args[0].equals("list")) {
 			sender.sendMessage("core.modules-list", this.module.getManager().listString());
-			return;
-		}
-		
-		List<Module> reload = new ArrayList<Module>();
-		if(args[0].equalsIgnoreCase("all")) {
-			reload.addAll(this.module.getManager().getModules());
-		} else {
-			for(String arg : args) {
-				Module m = this.module.getManager().looseGetModule(args[0]);
-				if(m != null) {
-					reload.add(m);
-				} else {
-					sender.sendMessage("core.unknown-module", arg);
-				}
+		} else if(args[0].equals("reload")) {
+			if(args.length < 2) {
+				sender.sendMessage("core.specify-modules");
+				return;
 			}
-		}
 
-		this.module.getManager().getCoreConfig().load();
-		for(Module m : reload) {
-			if(this.module.getManager().getCoreConfig().getBoolean("modules." + m.getName().toLowerCase(), true)) {
-				try {
-					m.reload();
-					sender.sendMessage("core.reloaded-module", m.getName());
-				} catch(Throwable t) {
-					sender.sendMessage("core.fail-reload-module", m.getName());
-					this.module.getLogger().severe("Failed to reload module \"" + m.getName() + "\"!");
-					t.printStackTrace();
-					this.module.getManager().unload(m);
-				}
+			List<Module> reload = new ArrayList<Module>();
+			if(args[1].equalsIgnoreCase("all")) {
+				reload.addAll(this.module.getManager().getModules());
 			} else {
-				this.module.getManager().unload(m);
-				sender.sendMessage("core.disabled-module", m.getName());
+				for(String arg : args) {
+					Module m = this.module.getManager().looseGetModule(arg);
+					if(m != null) {
+						reload.add(m);
+					} else {
+						sender.sendMessage("core.unknown-module", arg);
+					}
+				}
 			}
+
+			this.module.getManager().getCoreConfig().load();
+			for(Module m : reload) {
+				if(this.module.getManager().getCoreConfig().getBoolean("modules." + m.getName().toLowerCase(), true)) {
+					try {
+						m.reload();
+						sender.sendMessage("core.reloaded-module", m.getName());
+					} catch(Throwable t) {
+						sender.sendMessage("core.fail-reload-module", m.getName());
+						this.module.getLogger().severe("Failed to reload module \"" + m.getName() + "\"!");
+						t.printStackTrace();
+						this.module.getManager().unload(m);
+					}
+				} else {
+					this.module.getManager().unload(m);
+					sender.sendMessage("core.disabled-module", m.getName());
+				}
+			}
+		} else {
+			sender.sendMessage("generic.invalid-sub", "list, reload");
 		}
 	}
 	
@@ -155,7 +148,7 @@ public class CoreCommands extends Executor {
 		}
 	}
 
-	// Overriding help because it won't show Peacecraft commands to players because Essentials overrides /help...
+	/* // Overriding help because it won't show Peacecraft commands to players because Essentials overrides /help...
 	@Command(aliases = {"help"}, desc = "Shows a list of commands.", usage = "[topic] [page]", permission = CorePermissions.HELP)
 	public void help(CommandSender sender, String command, String args[]) {
 		String cmd;
@@ -315,6 +308,5 @@ public class CoreCommands extends Executor {
 		}
 
 		return H[s1Len + 1][s2Len + 1];
-	}
-
+	} */
 }

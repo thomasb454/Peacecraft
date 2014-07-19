@@ -97,6 +97,7 @@ economy:
         recieved-a: '&aYou received %s for killing a %s.'
 core:
     modules-list: '&aModules: %s'
+    specify-modules: '&cPlease specify modules to reload.'
     unknown-module: '&cUnknown module: %s.'
     reloaded-module: '&aReloaded module "%s".'
     fail-reload-module: '&cFailed to reload module "%s".'

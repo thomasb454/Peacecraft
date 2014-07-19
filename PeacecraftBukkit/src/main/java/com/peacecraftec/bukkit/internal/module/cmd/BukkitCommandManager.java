@@ -1,12 +1,10 @@
 package com.peacecraftec.bukkit.internal.module.cmd;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.peacecraftec.module.Module;
+import com.peacecraftec.module.ModuleManager;
+import com.peacecraftec.module.cmd.Command;
+import com.peacecraftec.module.cmd.CommandManager;
+import com.peacecraftec.module.cmd.Executor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
@@ -14,11 +12,8 @@ import org.bukkit.help.GenericCommandHelpTopic;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 
-import com.peacecraftec.module.Module;
-import com.peacecraftec.module.ModuleManager;
-import com.peacecraftec.module.cmd.Command;
-import com.peacecraftec.module.cmd.CommandManager;
-import com.peacecraftec.module.cmd.Executor;
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class BukkitCommandManager implements CommandManager {
 
@@ -68,7 +63,7 @@ public class BukkitCommandManager implements CommandManager {
 	@Override
 	public void unregister(Module module, Executor exec) {
 		CommandMap cmdmap = getCommandMap();
-		Map<String, org.bukkit.command.Command> map = getCommands(cmdmap);
+		Map <String, org.bukkit.command.Command> map = getCommands(cmdmap);
 		if(map != null) {
 			try {
 				for(Command command : exec.getCommands()) {

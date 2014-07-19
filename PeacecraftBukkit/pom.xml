@@ -14,8 +14,12 @@
     <!-- Repository locations -->
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/repositories/public</url>
+            <id>md-5-snapshots</id>
+            <url>http://repo.md-5.net/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>md-5-releases</id>
+            <url>http://repo.md-5.net/content/repositories/releases</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
@@ -31,11 +35,9 @@
             <version>dev-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
@@ -75,19 +77,9 @@
                         </goals>
                         <configuration>
                             <artifactSet>
-                                <excludes>
-                                    <exclude>org.bukkit:bukkit</exclude>
-                                    <exclude>com.sk89q:worldedit</exclude>
-                                    <exclude>de.schlichtherle:truezip</exclude>
-                                    <exclude>com.sk89q:jchronic</exclude>
-                                    <exclude>rhino:js</exclude>
-                                    <exclude>junit:junit</exclude>
-                                    <exclude>net.milkbowl.vault:Vault</exclude>
-                                    <exclude>org.dynmap:dynmap</exclude>
-                                    <exclude>essentials:essentials</exclude>
-                                    <exclude>lwc:lwc</exclude>
-                                    <exclude>donationpoints:donationpoints</exclude>
-                                </excludes>
+                                <includes>
+                                    <include>com.peacecraftec:peacecraftcore</include>
+                                </includes>
                             </artifactSet>
                         </configuration>
                     </execution>

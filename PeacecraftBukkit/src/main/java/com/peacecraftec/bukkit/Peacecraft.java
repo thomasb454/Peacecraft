@@ -13,6 +13,7 @@ import com.peacecraftec.module.ModuleManager;
 import com.peacecraftec.storage.yaml.YamlStorage;
 import org.bukkit.plugin.java.JavaPlugin;
 
+// TODO: use translation system for command descriptions
 public class Peacecraft extends JavaPlugin {
 
 	private ModuleManager modules;

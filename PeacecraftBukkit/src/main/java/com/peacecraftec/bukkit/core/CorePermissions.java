@@ -6,10 +6,10 @@ import com.peacecraftec.module.permission.PermissionContainer;
 public class CorePermissions implements PermissionContainer {
 
 	@Perm(desc = "Allows players to reload modules.")
-	public static final String RELOAD = "peacecraft.reload";
+	public static final String MANAGE_MODULES = "peacecraft.modules";
 	
-	@Perm(desc = "Allows players to view /help.")
-	public static final String HELP = "peacecraft.help";
+	/* @Perm(desc = "Allows players to view /help.")
+	public static final String HELP = "peacecraft.help"; */
 	
 	@Perm(desc = "Allows players to view /permissions.")
 	public static final String PERMISSIONS = "peacecraft.permissions";
