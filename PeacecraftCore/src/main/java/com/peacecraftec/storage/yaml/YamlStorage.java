@@ -1,19 +1,14 @@
 package com.peacecraftec.storage.yaml;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.peacecraftec.storage.MapBasedStorage;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.representer.Representer;
 
-import com.peacecraftec.storage.MapBasedStorage;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class YamlStorage extends MapBasedStorage {

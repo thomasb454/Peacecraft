@@ -1,11 +1,11 @@
 package com.peacecraftec.module.lang;
 
-import java.io.File;
-import java.io.InputStream;
-
 import com.peacecraftec.module.ModuleManager;
+import com.peacecraftec.storage.GenericFileStorage;
 import com.peacecraftec.storage.Storage;
 import com.peacecraftec.storage.yaml.YamlStorage;
+
+import java.io.InputStream;
 
 @SuppressWarnings("unused")
 public class Language {
@@ -21,7 +21,7 @@ public class Language {
 		InputStream stream = manager.getResource("languages/" + locale + ".yml");
 		if(stream != null) {
 			this.data = new YamlStorage();
-			this.data.load(stream);
+			((GenericFileStorage) this.data).load(stream);
 		}
 		
 		this.name = locale;

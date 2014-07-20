@@ -36,7 +36,7 @@ public class RedisStatSystem implements StatSystem {
 		for(String stat : this.available.all()) {
 			RedisSortedSet stats = this.db.getSortedSet(this.server + "." + stat);
 			Map<String, Double> values = new HashMap<String, Double>();
-			for(String uuid : stats.getMembers()) {
+			for(String uuid : stats.all()) {
 				values.put(this.manager.getUsername(UUID.fromString(uuid)), stats.get(uuid));
 			}
 			
@@ -170,7 +170,7 @@ public class RedisStatSystem implements StatSystem {
 		}
 		
 		this.available.add(stat);
-		this.db.getSortedSet(this.server + "." + stat).set(uuid.toString(), value);
+		this.db.getSortedSet(this.server + "." + stat).put(uuid.toString(), value);
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class RedisSortedSet {
 		return this.db.getRedis().exists(this.name);
 	}
 	
-	public Set<String> getMembers() {
+	public Set<String> all() {
 		return this.db.getRedis().zrangeByScore(this.name, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 	}
 	
@@ -37,7 +37,7 @@ public class RedisSortedSet {
 		return d;
 	}
 	
-	public void set(String member, double value) {
+	public void put(String member, double value) {
 		this.db.getRedis().zadd(this.name, value, member);
 	}
 	

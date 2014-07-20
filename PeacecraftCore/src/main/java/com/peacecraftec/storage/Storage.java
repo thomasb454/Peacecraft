@@ -1,7 +1,5 @@
 package com.peacecraftec.storage;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -9,11 +7,7 @@ public interface Storage {
 
 	public void load();
 	
-	public void load(InputStream in);
-	
 	public void save();
-	
-	public void save(OutputStream out);
 	
 	public List<String> getAbsoluteKeys(boolean deep);
 	

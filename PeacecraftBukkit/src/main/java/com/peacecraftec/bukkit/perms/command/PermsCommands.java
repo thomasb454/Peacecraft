@@ -149,7 +149,7 @@ public class PermsCommands extends Executor {
 				sender.sendMessage("perms.prefix-removed", player.getName());
 			} else {
 				player.setPrefix(args[2]);
-				sender.sendMessage("perms.prefix-set", player.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
+				sender.sendMessage("perms.prefix-put", player.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
 			}
 		} else if(args[1].equalsIgnoreCase("setsuffix")) {
 			if(args.length < 3) {
@@ -163,7 +163,7 @@ public class PermsCommands extends Executor {
 				sender.sendMessage("perms.suffix-removed", player.getName());
 			} else {
 				player.setSuffix(args[2]);
-				sender.sendMessage("perms.suffix-set", player.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
+				sender.sendMessage("perms.suffix-put", player.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
 			}
 		} else {
 			sender.sendMessage("generic.invalid-sub", "addperm, delperm, addgroup, removegroup, swapgroup, setprefix, setsuffix");
@@ -213,7 +213,7 @@ public class PermsCommands extends Executor {
 				sender.sendMessage("perms.prefix-removed", group.getName());
 			} else {
 				group.setPrefix(args[2]);
-				sender.sendMessage("perms.prefix-set", group.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
+				sender.sendMessage("perms.prefix-put", group.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
 			}
 		} else if(args[1].equalsIgnoreCase("setsuffix")) {
 			if(args.length < 3) {
@@ -227,7 +227,7 @@ public class PermsCommands extends Executor {
 				sender.sendMessage("perms.suffix-removed", group.getName());
 			} else {
 				group.setSuffix(args[2]);
-				sender.sendMessage("perms.suffix-set", group.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
+				sender.sendMessage("perms.suffix-put", group.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
 			}
 		} else {
 			sender.sendMessage("generic.invalid-sub", "addperm, delperm, setprefix, setsuffix");
@@ -292,11 +292,11 @@ public class PermsCommands extends Executor {
 			}
 			
 			this.module.getPermsManager().setGroupSpawn(world.getName(), group.getName(), player.getLocation());
-			sender.sendMessage("perms.set-spawn", group.getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+			sender.sendMessage("perms.put-spawn", group.getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
 		} else {
 			this.module.getPermsManager().setGlobalSpawn(player.getWorld().getName(), player.getLocation());
 			player.getWorld().setSpawnLocation(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-			sender.sendMessage("perms.set-spawn", player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+			sender.sendMessage("perms.put-spawn", player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
 		}
 	}
 	

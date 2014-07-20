@@ -110,7 +110,7 @@ public class RedisDatabase {
 		try {
 			this.redis.set(name, obj != null ? obj.toString() : null);
 		} catch(Exception e) {
-			System.err.println("Failed to set value at \"" + name + "\" in redis database.");
+			System.err.println("Failed to put value at \"" + name + "\" in redis database.");
 			e.printStackTrace();
 		}
 	}

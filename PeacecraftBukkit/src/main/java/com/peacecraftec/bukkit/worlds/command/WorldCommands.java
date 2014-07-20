@@ -163,7 +163,7 @@ public class WorldCommands extends Executor {
 					
 					boolean pvp = Boolean.valueOf(val);
 					world.setPvp(pvp);
-					sender.sendMessage("worlds.set-pvp", world.getName(), pvp);
+					sender.sendMessage("worlds.put-pvp", world.getName(), pvp);
 				} else if(prop.equalsIgnoreCase("difficulty")) {
 					Difficulty diff = null;
 					try {
@@ -178,7 +178,7 @@ public class WorldCommands extends Executor {
 					}
 					
 					world.setDifficulty(diff);
-					sender.sendMessage("worlds.set-difficulty", world.getName(), diff.name());
+					sender.sendMessage("worlds.put-difficulty", world.getName(), diff.name());
 				} else if(prop.equalsIgnoreCase("gamemode")) {
 					GameMode mode = null;
 					try {
@@ -193,7 +193,7 @@ public class WorldCommands extends Executor {
 					}
 					
 					world.setGameMode(mode);
-					sender.sendMessage("worlds.set-gamemode", world.getName(), mode.name());
+					sender.sendMessage("worlds.put-gamemode", world.getName(), mode.name());
 				}
 			} else if(args[0].equalsIgnoreCase("tp")) {
 				if(!(sender instanceof PlayerSender)) {

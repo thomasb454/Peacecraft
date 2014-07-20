@@ -38,7 +38,7 @@ public class ChatPermissions implements PermissionContainer {
 	@Perm(desc = "Allows players to clear other players' chat.")
 	public static final String CLEAR_OTHERS_CHAT = "peacecraft.chat.clear.others";
 	
-	@Perm(desc = "Allows players to set their webchat password.")
+	@Perm(desc = "Allows players to put their webchat password.")
 	public static final String SET_PASS = "peacecraft.chat.setpass";
 
 	@Perm(desc = "Allows players to view the list of online staff members.")

@@ -132,7 +132,7 @@ public class RedisWebchatSystem implements WebchatSystem {
 	public String setPassword(String user, String pass) {
 		UUID uuid = this.manager.getUUID(user);
 		if(uuid != null) {
-			this.passwords.set(uuid.toString(), BCrypt.hashpw(pass, BCrypt.gensalt(10)));
+			this.passwords.put(uuid.toString(), BCrypt.hashpw(pass, BCrypt.gensalt(10)));
 		}
 		
 		return pass;

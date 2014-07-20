@@ -83,7 +83,7 @@ public class ChatCommands extends Executor {
 			}
 			
 			data.setActiveChannel(channel);
-			player.sendMessage("chat.set-active", channel);
+			player.sendMessage("chat.put-active", channel);
 		}
 	}
 	
@@ -260,7 +260,7 @@ public class ChatCommands extends Executor {
 	@Command(aliases = {"chatpass"}, desc = "Sets your webchat password.", usage = "<password>", min = 1, permission = ChatPermissions.SET_PASS, console = false, commandblock = false)
 	public void chatpass(CommandSender sender, String command, String args[]) {
 		String res = this.module.setPassword(sender.getName(), args[0]);
-		sender.sendMessage("chat.webchat-set", res);
+		sender.sendMessage("chat.webchat-put", res);
 	}
 
 	@Command(aliases = {"mute"}, desc = "Mutes a player.", usage = "<player>", min = 1, permission = ChatPermissions.MUTE)

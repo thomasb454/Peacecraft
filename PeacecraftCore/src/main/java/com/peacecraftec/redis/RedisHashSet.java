@@ -20,7 +20,7 @@ public class RedisHashSet {
 		return this.db.getRedis().exists(this.name);
 	}
 	
-	public Set<String> getMembers() {
+	public Set<String> all() {
 		return this.db.getRedis().hkeys(this.name);
 	}
 	
@@ -32,7 +32,7 @@ public class RedisHashSet {
 		return this.db.getRedis().hget(this.name, field);
 	}
 	
-	public void set(String field, String value) {
+	public void put(String field, String value) {
 		this.db.getRedis().hset(this.name, field, value);
 	}
 	

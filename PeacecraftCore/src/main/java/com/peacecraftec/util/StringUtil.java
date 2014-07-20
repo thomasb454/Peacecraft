@@ -1,7 +1,6 @@
 package com.peacecraftec.util;
 
 public class StringUtil {
-	
 	public static String capitalizeAll(String str) {
 		StringBuilder result = new StringBuilder();
 		for(String word : str.split(" ")) {
@@ -16,5 +15,4 @@ public class StringUtil {
 		String first = str.substring(0, 1).toUpperCase();
 		return first + str.substring(1);
 	}
-	
 }

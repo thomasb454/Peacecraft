@@ -3,7 +3,6 @@ package com.peacecraftec.util;
 import java.util.Arrays;
 
 public class ExpUtil {
-	
 	private static int hardMaxLevel = 100000;
 	private static int xpRequiredForNextLevel[];
 	private static int xpTotalToReachLevel[];
@@ -73,5 +72,4 @@ public class ExpUtil {
 		
 		return xpTotalToReachLevel[level];
 	}
-	
 }
