@@ -1,5 +1,3 @@
 name: Peacecraft
 main: com.peacecraftec.bukkit.Peacecraft
 version: 1.0
-depend: [Vault]
-softdepend: [Essentials, LWC]

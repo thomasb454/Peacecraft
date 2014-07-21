@@ -2,6 +2,7 @@ package com.peacecraftec.bukkit.core.command;
 
 import com.peacecraftec.bukkit.core.CorePermissions;
 import com.peacecraftec.bukkit.core.PeacecraftCore;
+import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
 import com.peacecraftec.module.Module;
 import com.peacecraftec.module.cmd.Command;
 import com.peacecraftec.module.cmd.Executor;
@@ -9,7 +10,11 @@ import com.peacecraftec.module.cmd.sender.CommandSender;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.Permission;
 import org.bukkit.util.ChatPaginator;
 
@@ -167,6 +172,15 @@ public class CoreCommands extends Executor {
 		for(String line : page.getLines()) {
 			sender.sendMessage(line);
 		}
+	}
+
+	@Command(aliases = {"wand"}, desc = "Gives you a wand.", permission = CorePermissions.WAND, console = false, commandblock = false)
+	public void wand(CommandSender sender, String command, String args[]) {
+		ItemStack item = new ItemStack(Material.WOOD_AXE);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(ChatColor.GOLD + "Peacecraft Wand");
+		item.setItemMeta(meta);
+		((Player) BukkitCommandSender.unwrap(sender)).getInventory().addItem(item);
 	}
 
 	/* // Overriding help because it won't show Peacecraft commands to players because Essentials overrides /help...

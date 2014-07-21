@@ -1,9 +1,8 @@
-package com.peacecraftec.bukkit.internal.hook.selection;
+package com.peacecraftec.bukkit.internal.selection;
 
 import org.bukkit.Location;
 
 public class Selection {
-
 	private Location point1;
 	private Location point2;
 	
@@ -19,5 +18,8 @@ public class Selection {
 	public Location getSecondPoint() {
 		return this.point2;
 	}
-	
+
+	public boolean isComplete() {
+		return this.point1 != null && this.point2 != null;
+	}
 }

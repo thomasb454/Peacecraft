@@ -16,5 +16,8 @@ public class CorePermissions implements PermissionContainer {
 	
 	@Perm(desc = "Allows players to view /plugins.")
 	public static final String PLUGINS = "peacecraft.plugins";
+
+	@Perm(desc = "Allows players to use the selection wand.")
+	public static final String WAND = "peacecraft.wand";
 	
 }

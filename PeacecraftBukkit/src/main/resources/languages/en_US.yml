@@ -62,6 +62,8 @@ core:
     disabled-module: '&aDisabled module "%s".'
     fail-reload-module: '&cFailed to reload module "%s".'
     invalid-page: '&cInvalid page number.'
+    first-pos-set: '&dFirst position set. (%s, %s, %s)'
+    second-pos-set: '&Second position set. (%s, %s, %s)'
 chat:
     already-in-channel: '&cYou are already in that channel.'
     left-channel: '&aYou have left channel "%s".'

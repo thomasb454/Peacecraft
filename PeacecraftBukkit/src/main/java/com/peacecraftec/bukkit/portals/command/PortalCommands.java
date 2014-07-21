@@ -1,23 +1,19 @@
 package com.peacecraftec.bukkit.portals.command;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.block.BlockFace;
-
-import com.peacecraftec.module.cmd.sender.CommandSender;
-import com.peacecraftec.module.cmd.sender.PlayerSender;
-
-import org.bukkit.entity.Player;
-
-import com.peacecraftec.module.cmd.Command;
-import com.peacecraftec.module.cmd.Executor;
-import com.peacecraftec.bukkit.internal.hook.selection.Selection;
-import com.peacecraftec.bukkit.internal.hook.selection.SelectionAPI;
-import com.peacecraftec.bukkit.internal.hook.selection.Selector;
 import com.peacecraftec.bukkit.internal.module.cmd.sender.BukkitCommandSender;
+import com.peacecraftec.bukkit.internal.selection.Selection;
+import com.peacecraftec.bukkit.internal.selection.Selector;
 import com.peacecraftec.bukkit.portals.PeacecraftPortals;
 import com.peacecraftec.bukkit.portals.PortalPermissions;
+import com.peacecraftec.module.cmd.Command;
+import com.peacecraftec.module.cmd.Executor;
+import com.peacecraftec.module.cmd.sender.CommandSender;
+import com.peacecraftec.module.cmd.sender.PlayerSender;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class PortalCommands extends Executor {
 	
@@ -38,9 +34,8 @@ public class PortalCommands extends Executor {
 			}
 			
 			Player player = (Player) BukkitCommandSender.unwrap(sender);
-			Selector selector = SelectionAPI.get();
-			Selection select = selector.getSelection(player);
-			if(select == null) {
+			Selection select = Selector.get().getSelection(player);
+			if(select == null || !select.isComplete()) {
 				sender.sendMessage("generic.select-area");
 				return;
 			}
