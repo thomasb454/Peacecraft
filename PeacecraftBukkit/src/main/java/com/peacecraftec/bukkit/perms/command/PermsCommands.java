@@ -229,8 +229,36 @@ public class PermsCommands extends Executor {
 				group.setSuffix(args[2]);
 				sender.sendMessage("perms.suffix-put", group.getName(), ChatColor.translateAlternateColorCodes('&', args[2]));
 			}
+		} else if(args[1].equalsIgnoreCase("addinherit")) {
+			if(args.length < 3) {
+				sender.sendMessage("generic.usage", "/" + command + " <player> addinherit <group>");
+				return;
+			}
+
+			PermissionGroup g = this.module.getPermsManager().getWorld(world).getGroup(args[2]);
+			if(g == null) {
+				sender.sendMessage("perms.group-not-found");
+				return;
+			}
+
+			group.addInheritance(g);
+			sender.sendMessage("perms.added-inheritance", group.getName(), g.getName());
+		} else if(args[1].equalsIgnoreCase("removeinherit")) {
+			if(args.length < 3) {
+				sender.sendMessage("generic.usage", "/" + command + " <player> removeinherit <group>");
+				return;
+			}
+
+			PermissionGroup g = this.module.getPermsManager().getWorld(world).getGroup(args[2]);
+			if(g == null) {
+				sender.sendMessage("perms.group-not-found");
+				return;
+			}
+
+			group.removeInheritance(g);
+			sender.sendMessage("perms.removed-inheritance", group.getName(), g.getName());
 		} else {
-			sender.sendMessage("generic.invalid-sub", "addperm, delperm, setprefix, setsuffix");
+			sender.sendMessage("generic.invalid-sub", "addperm, delperm, setprefix, setsuffix, addinherit, removeinherit");
 		}
 	}
 	

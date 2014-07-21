@@ -1,14 +1,5 @@
 package com.peacecraftec.module;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
-
 import com.peacecraftec.module.cmd.CommandManager;
 import com.peacecraftec.module.cmd.sender.PlayerSender;
 import com.peacecraftec.module.event.EventManager;
@@ -19,12 +10,18 @@ import com.peacecraftec.redis.RedisDatabase;
 import com.peacecraftec.storage.Storage;
 import com.peacecraftec.storage.yaml.YamlStorage;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.*;
+import java.util.logging.Logger;
+
 public abstract class ModuleManager {
 
 	private File dataFolder;
 	private Storage config;
 	private RedisDatabase db;
 	private LanguageManager languages = new LanguageManager(this);
+	private Map<String, Class<? extends Module>> moduleTypes = new HashMap<String, Class<? extends Module>>();
 	private Map<String, Module> modules = new HashMap<String, Module>();
 	
 	public ModuleManager(File dataFolder) {
@@ -43,41 +40,61 @@ public abstract class ModuleManager {
 		this.db = null;
 	}
 
-	public void unload() {
-		for(Module module : new HashMap<String, Module>(this.modules).values()) {
-			this.unload(module);
-		}
+	public void register(String name, Class<? extends Module> module) {
+		this.moduleTypes.put(name, module);
 	}
 	
-	public void load(Module module) {
-		if(this.getCoreConfig().getBoolean("modules." + module.getName().toLowerCase(), true)) {
+	public void loadAll() {
+		for(String name : this.moduleTypes.keySet()) {
+			this.load(name);
+		}
+	}
+
+	public void load(String name) {
+		if(this.isEnabled(name)) {
+			return;
+		}
+
+		Class<? extends Module> type = this.getModuleType(name);
+		if(this.getCoreConfig().getBoolean("modules." + name.toLowerCase(), true)) {
+			Module module = null;
 			try {
-				this.modules.put(module.getName(), module);
+				module = type.getDeclaredConstructor(String.class, ModuleManager.class).newInstance(name, this);
+				this.modules.put(name, module);
 				module.onEnable();
 				this.getLogger().info("Module \"" + module.getName() + "\" successfully loaded.");
 				this.getEventManager().callModuleEnableEvent(module);
 			} catch(Throwable t) {
-				this.getLogger().severe("Failed to load module \"" + module.getName() + "\"!");
+				this.getLogger().severe("Failed to load module \"" + name + "\"!");
 				t.printStackTrace();
-				this.unload(module, false);
+			} finally {
+				if(module != null) {
+					try {
+						this.unload(name, false);
+					} catch(Throwable t) {
+					}
+				}
 			}
+		}
+	}
+
+	public void unloadAll() {
+		for(String name : this.moduleTypes.keySet()) {
+			this.unload(name);
 		}
 	}
 	
 	public void unload(String name) {
-		this.unload(this.modules.get(name));
+		this.unload(name, true);
 	}
-	
-	public void unload(Module module) {
-		this.unload(module, true);
-	}
-	
-	public void unload(Module module, boolean onDisable) {
-		if(module == null) {
+
+	public void unload(String name, boolean onDisable) {
+		if(!this.isEnabled(name)) {
 			return;
 		}
-		
+
 		try {
+			Module module = this.getModule(name);
 			if(onDisable) {
 				try {
 					module.onDisable();
@@ -93,13 +110,27 @@ public abstract class ModuleManager {
 			this.getScheduler().cancelAllTasks(module);
 			this.getLogger().info("Module \"" + module.getName() + "\" successfully unloaded.");
 		} catch(Throwable t) {
-			this.getLogger().severe("Failed to unload module \"" + module.getName() + "\"!");
+			this.getLogger().severe("Failed to unload module \"" + name + "\"!");
 			t.printStackTrace();
 		}
 		
-		this.modules.remove(module.getName());
+		this.modules.remove(name);
 	}
-	
+
+	public List<String> getModuleTypes() {
+		return new ArrayList<String>(this.moduleTypes.keySet());
+	}
+
+	public Class<? extends Module> getModuleType(String name) {
+		for(String type : this.moduleTypes.keySet()) {
+			if(name.equalsIgnoreCase(type)) {
+				return this.moduleTypes.get(type);
+			}
+		}
+
+		return null;
+	}
+
 	public boolean isEnabled(String name) {
 		return this.getModule(name) != null;
 	}
@@ -107,12 +138,8 @@ public abstract class ModuleManager {
 	public List<Module> getModules() {
 		return new ArrayList<Module>(this.modules.values());
 	}
-	
+
 	public Module getModule(String name) {
-		return this.modules.get(name);
-	}
-	
-	public Module looseGetModule(String name) {
 		for(String module : this.modules.keySet()) {
 			if(name.equalsIgnoreCase(module)) {
 				return this.modules.get(module);

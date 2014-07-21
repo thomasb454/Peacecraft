@@ -1,24 +1,18 @@
 package com.peacecraftec.bukkit.backup;
 
+import com.peacecraftec.bukkit.backup.command.BackupCommands;
+import com.peacecraftec.module.Module;
+import com.peacecraftec.module.ModuleManager;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
-import com.peacecraftec.bukkit.backup.command.BackupCommands;
-import com.peacecraftec.module.Module;
-import com.peacecraftec.module.ModuleManager;
 
 public class PeacecraftBackup extends Module {
 
@@ -27,8 +21,8 @@ public class PeacecraftBackup extends Module {
 	private int backupTask;
 	private boolean cancelled = false;
 
-	public PeacecraftBackup(ModuleManager manager) {
-		super("Backup", manager);
+	public PeacecraftBackup(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 
 	@Override

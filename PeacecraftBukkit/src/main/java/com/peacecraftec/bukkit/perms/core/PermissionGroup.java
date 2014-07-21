@@ -1,19 +1,14 @@
 package com.peacecraftec.bukkit.perms.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.peacecraftec.bukkit.chat.PeacecraftChat;
+import com.peacecraftec.bukkit.perms.PeacecraftPerms;
+import com.peacecraftec.storage.Storage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
-import com.peacecraftec.bukkit.chat.PeacecraftChat;
-import com.peacecraftec.bukkit.perms.PeacecraftPerms;
-import com.peacecraftec.storage.Storage;
+import java.util.*;
 
 public class PermissionGroup {
 
@@ -115,6 +110,20 @@ public class PermissionGroup {
 		}
 		
 		return ret;
+	}
+
+	public void addInheritance(PermissionGroup group) {
+		List<String> inherits = this.data.getList("groups." + this.name + ".inherits", String.class, new ArrayList<String>());
+		inherits.add(group.getName());
+		this.data.setValue("groups." + this.name + ".inherits", inherits);
+		this.data.save();
+	}
+
+	public void removeInheritance(PermissionGroup group) {
+		List<String> inherits = this.data.getList("groups." + this.name + ".inherits", String.class, new ArrayList<String>());
+		inherits.remove(group.getName());
+		this.data.setValue("groups." + this.name + ".inherits", inherits);
+		this.data.save();
 	}
 	
 	public List<String> getRawPermissions() {

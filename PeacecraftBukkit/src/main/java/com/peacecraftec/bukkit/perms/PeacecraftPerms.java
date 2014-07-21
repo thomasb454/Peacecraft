@@ -25,8 +25,8 @@ public class PeacecraftPerms extends Module {
 	private PermissionManager manager;
 	private PermsListener listen;
 	
-	public PeacecraftPerms(ModuleManager manager) {
-		super("Permissions", manager);
+	public PeacecraftPerms(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 
 	@Override

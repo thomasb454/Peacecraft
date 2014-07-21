@@ -13,8 +13,8 @@ public class PeacecraftStats extends Module {
 	
 	private StatSystem stats;
 	
-	public PeacecraftStats(ModuleManager manager) {
-		super("Stats", manager);
+	public PeacecraftStats(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 
 	@Override

@@ -29,8 +29,8 @@ public class PeacecraftChat extends Module {
 	private Storage muted;
 	private WebchatSystem webchat;
 	
-	public PeacecraftChat(ModuleManager manager) {
-		super("Chat", manager);
+	public PeacecraftChat(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 	
 	@Override

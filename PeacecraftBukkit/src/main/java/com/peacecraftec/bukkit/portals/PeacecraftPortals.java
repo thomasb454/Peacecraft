@@ -10,8 +10,8 @@ public class PeacecraftPortals extends Module {
 
 	private PortalManager manager;
 	
-	public PeacecraftPortals(ModuleManager manager) {
-		super("Portals", manager);
+	public PeacecraftPortals(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 
 	@Override

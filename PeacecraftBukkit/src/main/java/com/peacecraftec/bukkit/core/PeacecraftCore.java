@@ -10,8 +10,8 @@ import com.peacecraftec.module.ModuleManager;
 
 public class PeacecraftCore extends Module {
 
-	public PeacecraftCore(ModuleManager manager) {
-		super("Core", manager);
+	public PeacecraftCore(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 	
 	@Override

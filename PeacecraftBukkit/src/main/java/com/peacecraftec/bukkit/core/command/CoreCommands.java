@@ -25,49 +25,70 @@ public class CoreCommands extends Executor {
 		this.module = module;
 	}
 	
-	@Command(aliases = {"modules"}, desc = "Manages modules.", usage = "<list/reload> [modules]", min = 1, permission = CorePermissions.MANAGE_MODULES)
+	@Command(aliases = {"modules"}, desc = "Manages modules.", usage = "<list/reload/enable/disable> [modules]", min = 1, permission = CorePermissions.MANAGE_MODULES)
 	public void modules(CommandSender sender, String command, String args[]) {
 		if(args[0].equals("list")) {
 			sender.sendMessage("core.modules-list", this.module.getManager().listString());
-		} else if(args[0].equals("reload")) {
+		} else if(args[0].equals("reload") || args[0].equals("enable") || args[0].equals("disable")) {
 			if(args.length < 2) {
 				sender.sendMessage("core.specify-modules");
 				return;
 			}
 
-			List<Module> reload = new ArrayList<Module>();
+			List<String> modules = new ArrayList<String>();
 			if(args[1].equalsIgnoreCase("all")) {
-				reload.addAll(this.module.getManager().getModules());
+				modules.addAll(this.module.getManager().getModuleTypes());
 			} else {
 				for(String arg : args) {
-					Module m = this.module.getManager().looseGetModule(arg);
-					if(m != null) {
-						reload.add(m);
-					} else {
-						sender.sendMessage("core.unknown-module", arg);
-					}
+					modules.add(arg);
 				}
 			}
 
-			this.module.getManager().getCoreConfig().load();
-			for(Module m : reload) {
-				if(this.module.getManager().getCoreConfig().getBoolean("modules." + m.getName().toLowerCase(), true)) {
-					try {
-						m.reload();
-						sender.sendMessage("core.reloaded-module", m.getName());
-					} catch(Throwable t) {
-						sender.sendMessage("core.fail-reload-module", m.getName());
-						this.module.getLogger().severe("Failed to reload module \"" + m.getName() + "\"!");
-						t.printStackTrace();
-						this.module.getManager().unload(m);
+			if(args[0].equals("reload")) {
+				for(String name : modules) {
+					Module m = this.module.getManager().getModule(name);
+					if(m != null) {
+						try {
+							m.reload();
+							sender.sendMessage("core.reloaded-module", m.getName());
+						} catch(Throwable t) {
+							sender.sendMessage("core.fail-reload-module", m.getName());
+							this.module.getLogger().severe("Failed to reload module \"" + m.getName() + "\"!");
+							t.printStackTrace();
+							this.module.getManager().unload(name);
+						}
+					} else {
+						sender.sendMessage("core.unknown-module", name);
 					}
-				} else {
-					this.module.getManager().unload(m);
-					sender.sendMessage("core.disabled-module", m.getName());
 				}
+			} else if(args[0].equals("enable") || args[0].equals("disable")) {
+				boolean enable = args[0].equals("enable");
+				for(String name : modules) {
+					if(!this.module.getManager().getModuleTypes().contains(name)) {
+						sender.sendMessage("core.unknown-module", name);
+						continue;
+					}
+
+					this.module.getManager().getCoreConfig().setValue("modules." + name.toLowerCase(), enable);
+					if(enable) {
+						if(!this.module.getManager().isEnabled(name)) {
+							this.module.getManager().load(name);
+						}
+
+						sender.sendMessage("core.enabled-module", name);
+					} else {
+						if(this.module.getManager().isEnabled(name)) {
+							this.module.getManager().unload(name);
+						}
+
+						sender.sendMessage("core.disabled-module", name);
+					}
+				}
+
+				this.module.getManager().getCoreConfig().save();
 			}
 		} else {
-			sender.sendMessage("generic.invalid-sub", "list, reload");
+			sender.sendMessage("generic.invalid-sub", "list, reload, enable, disable");
 		}
 	}
 	

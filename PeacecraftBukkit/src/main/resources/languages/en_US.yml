@@ -19,6 +19,8 @@ perms:
     suffix-set: '&aSuffix of %s&a has been set to "%s&a".'
     prefix-removed: '&aPrefix of %s&a has been removed.'
     added-to-group: '&a%s&a has been added to group "%s".'
+    added-inheritance: 'Group &a%s&a now inherits from %s&a.'
+    removed-inheritance: 'Group &a%s&a no longer inherits from %s&a.'
     suffix-removed: '&aSuffix of %s&a has been removed.'
     auto-ranked-up: '&aYou have been ranked up from %s to %s!'
     perm-removed: '&aPermission "%s" has been removed from "%s".'
@@ -97,11 +99,12 @@ economy:
         recieved-a: '&aYou received %s for killing a %s.'
 core:
     modules-list: '&aModules: %s'
-    specify-modules: '&cPlease specify modules to reload.'
+    specify-modules: '&cPlease specify a list of modules.'
     unknown-module: '&cUnknown module: %s.'
     reloaded-module: '&aReloaded module "%s".'
+    enabled-module: '&aEnabled module "%s".'
+    disabled-module: '&aDisabled module "%s".'
     fail-reload-module: '&cFailed to reload module "%s".'
-    disabled-module: '&aDisabled module "%s" as it is disabled in the config.'
     invalid-page: '&cInvalid page number.'
 chat:
     already-in-channel: '&cYou are already in that channel.'

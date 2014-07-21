@@ -22,19 +22,20 @@ public class Peacecraft extends JavaPlugin {
 	public void onEnable() {
 		YamlStorage.setParameters(YamlConstructor.class, YamlRepresenter.class);
 		this.modules = new BukkitModuleManager(this);
-		this.modules.load(new PeacecraftCore(this.modules));
-		this.modules.load(new PeacecraftWorlds(this.modules));
-		this.modules.load(new PeacecraftPerms(this.modules));
-		this.modules.load(new PeacecraftChat(this.modules));
-		this.modules.load(new PeacecraftBackup(this.modules));
-		this.modules.load(new PeacecraftRestrictions(this.modules));
-		this.modules.load(new PeacecraftPortals(this.modules));
-		this.modules.load(new PeacecraftStats(this.modules));
+		this.modules.register("Core", PeacecraftCore.class);
+		this.modules.register("Worlds", PeacecraftWorlds.class);
+		this.modules.register("Permissions", PeacecraftPerms.class);
+		this.modules.register("Chat", PeacecraftChat.class);
+		this.modules.register("Backup", PeacecraftBackup.class);
+		this.modules.register("Restrictions", PeacecraftRestrictions.class);
+		this.modules.register("Portals", PeacecraftPortals.class);
+		this.modules.register("Stats", PeacecraftStats.class);
+		this.modules.loadAll();
 	}
 	
 	@Override
 	public void onDisable() {
-		this.modules.unload();
+		this.modules.unloadAll();
 		this.modules.cleanup();
 		this.modules = null;
 	}

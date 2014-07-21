@@ -9,8 +9,8 @@ import com.peacecraftec.bukkit.restrictions.listener.RestrictionsListener;
 
 public class PeacecraftRestrictions extends Module {
 
-	public PeacecraftRestrictions(ModuleManager manager) {
-		super("Restrictions", manager);
+	public PeacecraftRestrictions(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 	
 	@Override

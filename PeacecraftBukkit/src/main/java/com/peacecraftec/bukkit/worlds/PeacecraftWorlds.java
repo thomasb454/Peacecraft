@@ -16,8 +16,8 @@ public class PeacecraftWorlds extends Module {
 
 	private WorldManager manager;
 
-	public PeacecraftWorlds(ModuleManager manager) {
-		super("Worlds", manager);
+	public PeacecraftWorlds(String name, ModuleManager manager) {
+		super(name, manager);
 	}
 
 	@Override
