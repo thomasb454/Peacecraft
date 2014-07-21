@@ -31,6 +31,10 @@ perms:
     removed-from-group: '&a%s&a has been removed from group "%s".'
     spawn-teleport: '&aTeleported to spawn.'
     group-not-found: '&cGroup not found.'
+    group-exists: '&cGroup %s&c already exists.'
+    group-created: '&aGroup %s&a has been created.'
+    group-deleted: '&aGroup %s&a has been deleted.'
+    set-default-group: '&aDefault group of %s&a has been set to %s&a.'
     welcome: '&d[Server] Welcome %s to the server! %s unique players have joined.'
 stats:
     command-header: '&bStats of player "&9%s&b":'

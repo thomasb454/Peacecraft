@@ -51,7 +51,22 @@ public class PermissionWorld {
 		
 		return new PermissionGroup(name, this, this.groups, this.module);
 	}
-	
+
+	public void createGroup(String name) {
+		this.groups.setValue("groups." + name + ".permissions", new ArrayList<String>());
+		this.groups.save();
+	}
+
+	public void deleteGroup(PermissionGroup group) {
+		this.groups.remove("groups." + group.getName());
+		this.groups.save();
+	}
+
+	public void setDefaultGroup(PermissionGroup group) {
+		this.groups.setValue("default", group.getName());
+		this.groups.save();
+	}
+
 	public PermissionPlayer getPlayer(String name) {
 		UUID uuid = this.module.getManager().getUUID(name);
 		if(uuid == null) {
