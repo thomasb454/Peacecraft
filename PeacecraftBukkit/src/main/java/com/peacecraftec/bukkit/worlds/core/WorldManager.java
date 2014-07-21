@@ -1,24 +1,17 @@
 package com.peacecraftec.bukkit.worlds.core;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
-import org.bukkit.entity.Player;
-
 import com.peacecraftec.bukkit.perms.PeacecraftPerms;
 import com.peacecraftec.bukkit.worlds.PeacecraftWorlds;
 import com.peacecraftec.storage.Storage;
 import com.peacecraftec.storage.yaml.YamlStorage;
+import org.bukkit.*;
+import org.bukkit.World.Environment;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WorldManager {
 
@@ -110,8 +103,8 @@ public class WorldManager {
 				this.loadWorld(name);
 				return true;
 			}
-			
-			File f = new File(name);
+
+			File f = new File(Bukkit.getServer().getWorldContainer(), name);
 			if(!f.exists() || !f.isDirectory()) {
 				return false;
 			}
@@ -125,6 +118,17 @@ public class WorldManager {
 		}
 		
 		return true;
+	}
+
+	public void deleteWorld(String name) {
+		name = name.toLowerCase();
+		if(this.isLoaded(name)) {
+			this.unloadWorld(name);
+		}
+
+		new File(Bukkit.getServer().getWorldContainer(), name).delete();
+		this.data.remove("worlds." + name);
+		this.data.save();
 	}
 	
 	public void loadWorld(String name) {

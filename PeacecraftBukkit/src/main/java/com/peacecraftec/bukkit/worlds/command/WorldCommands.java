@@ -35,12 +35,12 @@ public class WorldCommands extends Executor {
 				sender.sendMessage("generic.usage", "/" + command + " create <name> <environment> [type] [seed] [genStructures] [generator]");
 				return;
 			}
-			
+
 			if(this.module.getWorldManager().configContainsWorld(args[1])) {
 				sender.sendMessage("worlds.already-exists");
 				return;
 			}
-			
+
 			String name = args[1];
 			Environment env = null;
 			try {
@@ -53,7 +53,7 @@ public class WorldCommands extends Executor {
 				sender.sendMessage("worlds.invalid-environment");
 				return;
 			}
-			
+
 			WorldType type = WorldType.NORMAL;
 			if(args.length > 3) {
 				try {
@@ -67,7 +67,7 @@ public class WorldCommands extends Executor {
 					return;
 				}
 			}
-			
+
 			boolean provSeed = false;
 			long seed = 0;
 			if(args.length > 4) {
@@ -79,41 +79,54 @@ public class WorldCommands extends Executor {
 					return;
 				}
 			}
-			
+
 			boolean genStructures = true;
 			if(args.length > 5) {
 				if(!args[5].equalsIgnoreCase("true") && !args[5].equalsIgnoreCase("false")) {
 					sender.sendMessage("worlds.invalid-genstruct");
 					return;
 				}
-				
+
 				genStructures = Boolean.parseBoolean(args[5]);
 			}
-			
+
 			String generator = null;
 			if(args.length > 6) {
 				generator = args[6];
 			}
-			
+
 			sender.sendMessage("worlds.creating", name);
 			this.module.getWorldManager().createWorld(name, seed, generator, env, type, genStructures, provSeed);
 			sender.sendMessage("worlds.created", name);
+		} else if(args[0].equalsIgnoreCase("delete")) {
+			if(args.length < 2) {
+				sender.sendMessage("generic.usage", "/" + command + " delete <world>");
+				return;
+			}
+
+			if(!this.module.getWorldManager().configContainsWorld(args[1])) {
+				sender.sendMessage("generic.world-not-found");
+				return;
+			}
+
+			this.module.getWorldManager().deleteWorld(args[1]);
+			sender.sendMessage("worlds.deleted", args[1]);
 		} else if(args[0].equalsIgnoreCase("load")) {
 			if(args.length < 2) {
 				sender.sendMessage("generic.usage", "/" + command + " load <world>");
 				return;
 			}
-			
+
 			if(!this.module.getWorldManager().configContainsWorld(args[1])) {
 				sender.sendMessage("generic.world-not-found");
 				return;
 			}
-			
+
 			if(this.module.getWorldManager().isLoaded(args[1])) {
 				sender.sendMessage("worlds.already-loaded");
 				return;
 			}
-			
+
 			this.module.getWorldManager().loadWorld(args[1]);
 			sender.sendMessage("worlds.loaded", args[1]);
 		} else if(args[0].equalsIgnoreCase("import")) {
@@ -143,7 +156,7 @@ public class WorldCommands extends Executor {
 				sender.sendMessage("generic.world-not-found");
 				return;
 			}
-			
+
 			if(args[0].equalsIgnoreCase("unload")) {
 				this.module.getWorldManager().unloadWorld(world.getName());
 				sender.sendMessage("worlds.unloaded", world.getName());
@@ -228,7 +241,7 @@ public class WorldCommands extends Executor {
 			
 			sender.sendMessage(ret.toString());
 		} else {
-			sender.sendMessage("generic.invalid-sub", "create, load, import, unload, setprop, tp, list");
+			sender.sendMessage("generic.invalid-sub", "create, delete, load, import, unload, setprop, tp, list");
 		}
 	}
 

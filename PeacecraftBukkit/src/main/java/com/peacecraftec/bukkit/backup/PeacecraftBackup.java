@@ -125,8 +125,8 @@ public class PeacecraftBackup extends Module {
 						return;
 					}
 					
-					File from = new File(world);
-					if(!from.exists()) {
+					File from = new File(Bukkit.getServer().getWorldContainer(), world);
+					if(!from.exists() || !from.isDirectory()) {
 						getLogger().warning("World \"" + world + "\" was not found.");
 						continue;
 					}
