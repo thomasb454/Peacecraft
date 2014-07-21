@@ -34,6 +34,9 @@ perms:
     group-exists: '&cGroup %s&c already exists.'
     group-created: '&aGroup %s&a has been created.'
     group-deleted: '&aGroup %s&a has been deleted.'
+    autorank-added: '&aAdded automatic ranking from group %s&a to group %s&a in %s&a minutes.'
+    autorank-removed: '&aRemoved automatic ranking from group %s%a.'
+    invalid-minutes: '&cInvalid number of minutes "%s".'
     set-default-group: '&aDefault group of %s&a has been set to %s&a.'
     welcome: '&d[Server] Welcome %s to the server! %s unique players have joined.'
 stats:

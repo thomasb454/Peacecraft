@@ -91,15 +91,26 @@ public class PermissionWorld {
 	}
 	
 	public boolean isAutoRanked(String fromGroup) {
-		return this.groups.contains("auto-rank." + fromGroup);
+		return this.groups.contains("auto-rank." + fromGroup.toLowerCase());
 	}
 	
 	public String getAutoRank(String fromGroup) {
-		return this.groups.getString("auto-rank." + fromGroup + ".to");
+		return this.groups.getString("auto-rank." + fromGroup.toLowerCase() + ".to");
 	}
 	
 	public int getRankMinutes(String fromGroup) {
-		return this.groups.getInteger("auto-rank." + fromGroup + ".minutes");
+		return this.groups.getInteger("auto-rank." + fromGroup.toLowerCase() + ".minutes");
+	}
+
+	public void addAutoRank(String fromGroup, String to, int minutes) {
+		this.groups.setValue("auto-rank." + fromGroup.toLowerCase() + ".to", to.toLowerCase());
+		this.groups.setValue("auto-rank." + fromGroup.toLowerCase() + ".minutes", minutes);
+		this.groups.save();
+	}
+
+	public void removeAutoRank(String fromGroup) {
+		this.groups.remove("auto-rank." + fromGroup.toLowerCase());
+		this.groups.save();
 	}
 	
 	public Storage getGroupFile() {

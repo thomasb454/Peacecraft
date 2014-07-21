@@ -286,6 +286,36 @@ public class PermsCommands extends Executor {
 		this.module.getPermsManager().getWorld(world).setDefaultGroup(group);
 		sender.sendMessage("perms.set-default-group", world, group.getName());
 	}
+
+	@Command(aliases = {"autorank"}, desc = "Manages automatic ranking.", usage = "<subcommand> [args]", min = 1, permission = PermsPermissions.MANAGE)
+	public void autorank(CommandSender sender, String command, String args[]) {
+		String world = sender instanceof PlayerSender ? ((Player) BukkitCommandSender.unwrap(sender)).getWorld().getName() : this.module.getManager().getDefaultWorld();
+		if(args[0].equalsIgnoreCase("add")) {
+			if(args.length < 4) {
+				sender.sendMessage("generic.usage", "/" + command + " add <from> <to> <minutes>");
+				return;
+			}
+
+			try {
+				this.module.getPermsManager().getWorld(world).addAutoRank(args[1], args[2], Integer.parseInt(args[3]));
+			} catch(NumberFormatException e) {
+				sender.sendMessage("perms.invalid-minutes", args[3]);
+				return;
+			}
+
+			sender.sendMessage("perms.autorank-added", args[1], args[2], args[3]);
+		} else if(args[0].equalsIgnoreCase("remove")) {
+			if(args.length < 2) {
+				sender.sendMessage("generic.usage", "/" + command + " remove <from>");
+				return;
+			}
+
+			this.module.getPermsManager().getWorld(world).removeAutoRank(args[1]);
+			sender.sendMessage("perms.autorank-removed", args[1]);
+		} else {
+			sender.sendMessage("generic.invalid-sub", "add, remove");
+		}
+	}
 	
 	@Command(aliases = {"spawn"}, desc = "Teleports you to spawn.", usage = "[world]", permission = PermsPermissions.SPAWN, console = false, commandblock = false)
 	public void spawn(CommandSender sender, String command, String args[]) {
