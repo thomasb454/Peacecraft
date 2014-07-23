@@ -1,5 +1,7 @@
 package com.peacecraftec.redis;
 
+import redis.clients.jedis.Jedis;
+
 import java.util.Set;
 
 public class RedisHashSet {
@@ -17,23 +19,47 @@ public class RedisHashSet {
 	}
 
 	public boolean exists() {
-		return this.db.getRedis().exists(this.name);
+		return this.db.contains(this.name);
 	}
 	
 	public Set<String> all() {
-		return this.db.getRedis().hkeys(this.name);
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			return jedis.hkeys(this.name);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
 	}
 	
 	public boolean contains(String field) {
-		return this.db.getRedis().hget(this.name, field) != null;
+		return this.get(field) != null;
 	}
 	
 	public String get(String field) {
-		return this.db.getRedis().hget(this.name, field);
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			return jedis.hget(this.name, field);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
 	}
 	
 	public void put(String field, String value) {
-		this.db.getRedis().hset(this.name, field, value);
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			jedis.hset(this.name, field, value);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
+	}
+
+	public void remove(String field) {
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			jedis.hdel(this.name, field);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
 	}
 	
 }

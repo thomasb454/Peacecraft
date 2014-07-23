@@ -1,40 +1,33 @@
 package com.peacecraftec.web.stats.redis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import com.peacecraftec.module.ModuleManager;
-import com.peacecraftec.redis.RedisDatabase;
 import com.peacecraftec.redis.RedisSet;
 import com.peacecraftec.redis.RedisSortedSet;
 import com.peacecraftec.web.stats.StatSystem;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class RedisStatSystem implements StatSystem {
 
 	private ModuleManager manager;
 	private String server;
-	private RedisDatabase db;
 	private RedisSet available;
 	private RedisSet players;
-	
+
 	public RedisStatSystem(ModuleManager manager, String server) {
-		this(manager, server, new RedisDatabase("localhost"));
-	}
-	
-	public RedisStatSystem(ModuleManager manager, String server, RedisDatabase db) {
 		this.manager = manager;
 		this.server = server;
-		this.db = db;
-		this.available = this.db.getSet(this.server + ".stats.available");
-		this.players = this.db.getSet(this.server + ".stats.players");
+		this.available = this.manager.getDatabase().getSet(this.server + ".stats.available");
+		this.players = this.manager.getDatabase().getSet(this.server + ".stats.players");
 	}
 	
 	@Override
 	public Map<String, Map<String, Double>> getAll() {
 		Map<String, Map<String, Double>> result = new HashMap<String, Map<String, Double>>();
 		for(String stat : this.available.all()) {
-			RedisSortedSet stats = this.db.getSortedSet(this.server + "." + stat);
+			RedisSortedSet stats = this.manager.getDatabase().getSortedSet(this.server + "." + stat);
 			Map<String, Double> values = new HashMap<String, Double>();
 			for(String uuid : stats.all()) {
 				values.put(this.manager.getUsername(UUID.fromString(uuid)), stats.get(uuid));
@@ -55,7 +48,7 @@ public class RedisStatSystem implements StatSystem {
 		
 		Map<String, Double> result = new HashMap<String, Double>();
 		for(String stat : this.available.all()) {
-			RedisSortedSet stats = this.db.getSortedSet(this.server + "." + stat);
+			RedisSortedSet stats = this.manager.getDatabase().getSortedSet(this.server + "." + stat);
 			if(stats.contains(uuid.toString())) {
 				result.put(stat, stats.get(uuid.toString()));
 			}
@@ -79,7 +72,7 @@ public class RedisStatSystem implements StatSystem {
 			return false;
 		}
 		
-		return this.db.getSortedSet(this.server + "." + stat).contains(uuid.toString());
+		return this.manager.getDatabase().getSortedSet(this.server + "." + stat).contains(uuid.toString());
 	}
 
 	@Override
@@ -124,7 +117,7 @@ public class RedisStatSystem implements StatSystem {
 			return 0;
 		}
 		
-		return this.db.getSortedSet(this.server + "." + stat).get(uuid.toString());
+		return this.manager.getDatabase().getSortedSet(this.server + "." + stat).get(uuid.toString());
 	}
 
 	@Override
@@ -170,7 +163,7 @@ public class RedisStatSystem implements StatSystem {
 		}
 		
 		this.available.add(stat);
-		this.db.getSortedSet(this.server + "." + stat).put(uuid.toString(), value);
+		this.manager.getDatabase().getSortedSet(this.server + "." + stat).put(uuid.toString(), value);
 	}
 
 	@Override
@@ -181,7 +174,7 @@ public class RedisStatSystem implements StatSystem {
 		}
 		
 		this.available.add(stat);
-		this.db.getSortedSet(this.server + "." + stat).increment(uuid.toString());
+		this.manager.getDatabase().getSortedSet(this.server + "." + stat).increment(uuid.toString());
 	}
 	
 	@Override
@@ -192,12 +185,11 @@ public class RedisStatSystem implements StatSystem {
 		}
 		
 		this.available.add(stat);
-		this.db.getSortedSet(this.server + "." + stat).increment(uuid.toString(), amount);
+		this.manager.getDatabase().getSortedSet(this.server + "." + stat).increment(uuid.toString(), amount);
 	}
 	
 	@Override
 	public void cleanup() {
-		this.db.cleanup();
 	}
 
 }

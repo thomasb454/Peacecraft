@@ -6,8 +6,8 @@ import com.peacecraftec.bukkit.perms.PeacecraftPerms;
 import com.peacecraftec.module.Module;
 import com.peacecraftec.module.ModuleManager;
 import com.peacecraftec.module.cmd.sender.PlayerSender;
-import com.peacecraftec.storage.Storage;
-import com.peacecraftec.storage.yaml.YamlStorage;
+import com.peacecraftec.redis.RedisHashSet;
+import com.peacecraftec.redis.RedisSet;
 import com.peacecraftec.web.chat.WebchatFactory;
 import com.peacecraftec.web.chat.WebchatSystem;
 import com.peacecraftec.web.chat.data.ChannelAction;
@@ -17,16 +17,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
 public class PeacecraftChat extends Module {
 
-	private Storage nicknames;
-	private Storage muted;
+	private RedisHashSet nicknames;
+	private RedisSet muted;
 	private WebchatSystem webchat;
 	
 	public PeacecraftChat(String name, ModuleManager manager) {
@@ -36,12 +34,8 @@ public class PeacecraftChat extends Module {
 	@Override
 	public void onEnable() {
 		this.webchat = WebchatFactory.create(this.getManager());
-		this.nicknames = new YamlStorage(new File(this.getDirectory(), "nicknames.yml").getPath());
-		this.nicknames.load();
-		this.muted = new YamlStorage(new File(this.getDirectory(), "muted.yml").getPath());
-		this.muted.load();
-		this.muted.applyDefault("muted", new ArrayList<String>());
-		this.muted.save();
+		this.nicknames = this.getManager().getDatabase().getHashSet("nicknames");
+		this.muted = this.getManager().getDatabase().getSet("muted");
 		this.getManager().getPermissionManager().register(this, ChatPermissions.class);
 		this.getManager().getCommandManager().register(this, new ChatCommands(this));
 		this.getManager().getEventManager().register(this, new ChatListener(this));
@@ -54,9 +48,7 @@ public class PeacecraftChat extends Module {
 	
 	@Override
 	public void onDisable() {
-		this.nicknames.save();
 		this.nicknames = null;
-		this.muted.save();
 		this.muted = null;
 		this.webchat.cleanup();
 		this.webchat = null;
@@ -68,17 +60,9 @@ public class PeacecraftChat extends Module {
 	
 	@Override
 	public void reload() {
-		this.nicknames.save();
-		this.muted.save();
 		this.webchat.cleanup();
 		this.webchat = null;
 		this.webchat = WebchatFactory.create(this.getManager());
-		this.nicknames = new YamlStorage(new File(this.getDirectory(), "nicknames.yml").getPath());
-		this.nicknames.load();
-		this.muted = new YamlStorage(new File(this.getDirectory(), "muted.yml").getPath());
-		this.muted.load();
-		this.muted.applyDefault("muted", new ArrayList<String>());
-		this.muted.save();
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
 			this.loadDisplayName(player);
 			this.addOnlinePlayer(player.getName());
@@ -97,7 +81,7 @@ public class PeacecraftChat extends Module {
 	public String getName(String player) {
 		UUID uuid = this.getManager().getUUID(player);
 		if(uuid != null && this.hasName(player)) {
-			return this.nicknames.getString(uuid.toString());
+			return this.nicknames.get(uuid.toString());
 		}
 
 		return this.getManager().getCasedUsername(player);
@@ -106,8 +90,7 @@ public class PeacecraftChat extends Module {
 	public void setName(Player player, String name) {
 		UUID uuid = this.getManager().getUUID(player.getName());
 		if(uuid != null) {
-			this.nicknames.setValue(uuid.toString(), name);
-			this.nicknames.save();
+			this.nicknames.put(uuid.toString(), name);
 			this.loadDisplayName(player);
 		}
 	}
@@ -122,7 +105,7 @@ public class PeacecraftChat extends Module {
 	public boolean isMuted(String player) {
 		UUID uuid = this.getManager().getUUID(player);
 		if(uuid != null) {
-			return this.muted.getList("muted", String.class).contains(uuid.toString());
+			return this.muted.contains(uuid.toString());
 		}
 
 		return false;
@@ -131,14 +114,11 @@ public class PeacecraftChat extends Module {
 	public void setMuted(String player, boolean muted) {
 		UUID uuid = this.getManager().getUUID(player);
 		if(uuid != null) {
-			List<String> mute = this.muted.getList("muted", String.class);
 			if(muted) {
-				mute.add(uuid.toString());
+				this.muted.add(uuid.toString());
 			} else {
-				mute.remove(uuid.toString());
+				this.muted.remove(uuid.toString());
 			}
-
-			this.muted.setValue("muted", mute);
 		}
 	}
 	

@@ -1,13 +1,7 @@
 package com.peacecraftec.web.chat.redis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.google.gson.JsonObject;
 import com.peacecraftec.module.ModuleManager;
-import com.peacecraftec.redis.RedisDatabase;
 import com.peacecraftec.redis.RedisHashSet;
 import com.peacecraftec.redis.RedisSet;
 import com.peacecraftec.web.chat.WebchatSystem;
@@ -15,13 +9,17 @@ import com.peacecraftec.web.chat.data.ChannelAction;
 import com.peacecraftec.web.chat.data.ChannelData;
 import com.peacecraftec.web.chat.data.WebMessage;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public class RedisWebchatSystem implements WebchatSystem {
 
 	private static final String CHANNEL_OUT = "PeacecraftWebChatOut";
 	private static final String CHANNEL_IN = "PeacecraftWebChatIn";
 	
 	private ModuleManager manager;
-	private RedisDatabase db;
 	private RedisHashSet passwords;
 	private RedisSet mods;
 	private RedisSet onlinePlayers;
@@ -31,17 +29,16 @@ public class RedisWebchatSystem implements WebchatSystem {
 	
 	public RedisWebchatSystem(ModuleManager manager) {
 		this.manager = manager;
-		this.db = new RedisDatabase("localhost");
-		this.passwords = this.db.getHashSet("webchat.passwords");
-		this.mods = this.db.getSet("webchat.mods");
-		this.onlinePlayers = this.db.getSet("webchat.online");
+		this.passwords = this.manager.getDatabase().getHashSet("webchat.passwords");
+		this.mods = this.manager.getDatabase().getSet("webchat.mods");
+		this.onlinePlayers = this.manager.getDatabase().getSet("webchat.online");
 		for(String uuid : this.onlinePlayers.all()) {
 			this.removeOnlinePlayer(uuid);
 		}
 		
 		new Thread() {
 			public void run() {
-				pubsub = new WebchatPubSub(RedisWebchatSystem.this.manager, RedisWebchatSystem.this, "localhost", CHANNEL_IN);
+				pubsub = new WebchatPubSub(RedisWebchatSystem.this.manager, RedisWebchatSystem.this, RedisWebchatSystem.this.manager.getDatabase(), CHANNEL_IN);
 				pubsub.subscribe();
 			}
 		}.start();
@@ -57,7 +54,7 @@ public class RedisWebchatSystem implements WebchatSystem {
 			json.addProperty("uuid", uuid != null ? uuid.toString() : null);
 			json.addProperty(message.isToChannel() ? "channel" : "to", message.getTo());
 			json.addProperty("message", message.getMessage());
-			this.db.publish(CHANNEL_OUT, json.toString());
+			this.manager.getDatabase().publish(CHANNEL_OUT, json.toString());
 		} catch(Exception e) {
 			System.err.println("Failed to publish chat message to webchat!");
 			e.printStackTrace();
@@ -96,7 +93,7 @@ public class RedisWebchatSystem implements WebchatSystem {
 			json.addProperty("uuid", uuid != null ? uuid.toString() : null);
 			json.addProperty("channel", action.getChannel());
 			json.addProperty("action", action.getAction().name().toLowerCase());
-			this.db.publish(CHANNEL_OUT, json.toString());
+			this.manager.getDatabase().publish(CHANNEL_OUT, json.toString());
 		} catch(Exception e) {
 			System.err.println("Failed to publish channel action to webchat!");
 			e.printStackTrace();
@@ -117,7 +114,7 @@ public class RedisWebchatSystem implements WebchatSystem {
 			return null;
 		}
 		
-		return new RedisChannelData(this.manager, this, this.db, uuid);
+		return new RedisChannelData(this.manager, this, this.manager.getDatabase(), uuid);
 	}
 	
 	public void addIncoming(WebMessage message) {
@@ -167,7 +164,7 @@ public class RedisWebchatSystem implements WebchatSystem {
 		}
 		
 		this.pubsub.unsubscribe();
-		this.db.cleanup();
+		this.pubsub = null;
 	}
 
 	@Override

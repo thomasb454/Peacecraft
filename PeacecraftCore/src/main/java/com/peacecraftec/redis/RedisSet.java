@@ -1,5 +1,7 @@
 package com.peacecraftec.redis;
 
+import redis.clients.jedis.Jedis;
+
 import java.util.Set;
 
 public class RedisSet {
@@ -17,23 +19,43 @@ public class RedisSet {
 	}
 
 	public boolean exists() {
-		return this.db.getRedis().exists(this.name);
+		return this.db.contains(this.name);
 	}
 	
 	public Set<String> all() {
-		return this.db.getRedis().smembers(this.name);
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			return jedis.smembers(this.name);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
 	}
 	
 	public boolean contains(String value) {
-		return this.db.getRedis().sismember(this.name, value);
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			return jedis.sismember(this.name, value);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
 	}
 	
 	public void add(String value) {
-		this.db.getRedis().sadd(this.name, value);
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			jedis.sadd(this.name, value);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
 	}
 	
 	public void remove(String value) {
-		this.db.getRedis().srem(this.name, value);
+		Jedis jedis = this.db.getPool().getResource();
+		try {
+			jedis.srem(this.name, value);
+		} finally {
+			this.db.getPool().returnResource(jedis);
+		}
 	}
 	
 }

@@ -12,15 +12,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChatListener implements Listener {
+	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm");
 
 	private PeacecraftChat module;
 
@@ -101,9 +101,9 @@ public class ChatListener implements Listener {
 		}
 
 		ChannelData data = this.module.getChannelData(player.getName());
-		event.setFormat("%1$s" + ChatColor.RESET + " " + ChatUtil.formatChannelName(data.getActiveChannel()) + ": %2$s");
+
+		event.setFormat(ChatColor.GRAY + "[" + FORMAT.format(new Date()) + "] " + ChatColor.RESET + "%1$s" + ChatColor.RESET + " " + ChatUtil.formatChannelName(data.getActiveChannel()) + ": %2$s");
 		this.module.sendToChannel(event.getPlayer().getName(), data.getActiveChannel(), String.format(event.getFormat(), player.getDisplayName(), event.getMessage()));
 		event.setCancelled(true);
 	}
-
 }

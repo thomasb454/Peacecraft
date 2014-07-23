@@ -6,9 +6,12 @@ import com.peacecraftec.web.chat.data.WebMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public class WebchatTask implements Runnable {
+	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm");
 
 	private PeacecraftChat module;
 	
@@ -46,7 +49,7 @@ public class WebchatTask implements Runnable {
 			}
 
 			String displayName = ChatColor.DARK_GRAY + "[WEB] " + ChatColor.RESET + this.module.getDisplayName(chat.getPlayer(), this.module.getManager().getDefaultWorld());
-			String format = "%1$s" + ChatColor.RESET + " " + ChatUtil.formatChannelName(chat.getTo()) + ": %2$s";
+			String format = ChatColor.GRAY + "[" + FORMAT.format(new Date()) + "] " + ChatColor.RESET + "%1$s" + ChatColor.RESET + " " + ChatUtil.formatChannelName(chat.getTo()) + ": %2$s";
 			if(message.toLowerCase().startsWith("/me ") && !message.toLowerCase().endsWith("/me ")) {
 				format = ChatColor.DARK_PURPLE + " * " + ChatColor.RESET + "%1$s" + ChatColor.RESET + " " + ChatUtil.formatChannelName(chat.getTo()) + ChatColor.DARK_PURPLE + " %2$s";
 				message = message.replaceFirst("/me ", "");
@@ -69,5 +72,4 @@ public class WebchatTask implements Runnable {
 			}
 		}
 	}
-
 }

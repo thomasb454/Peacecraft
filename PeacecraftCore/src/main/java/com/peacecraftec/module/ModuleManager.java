@@ -21,8 +21,8 @@ public abstract class ModuleManager {
 	private Storage config;
 	private RedisDatabase db;
 	private LanguageManager languages = new LanguageManager(this);
-	private Map<String, Class<? extends Module>> moduleTypes = new HashMap<String, Class<? extends Module>>();
-	private Map<String, Module> modules = new HashMap<String, Module>();
+	private Map<String, Class<? extends Module>> moduleTypes = new LinkedHashMap<String, Class<? extends Module>>();
+	private Map<String, Module> modules = new LinkedHashMap<String, Module>();
 	
 	public ModuleManager(File dataFolder) {
 		this.dataFolder = dataFolder;
@@ -67,11 +67,10 @@ public abstract class ModuleManager {
 			} catch(Throwable t) {
 				this.getLogger().severe("Failed to load module \"" + name + "\"!");
 				t.printStackTrace();
-			} finally {
 				if(module != null) {
 					try {
 						this.unload(name, false);
-					} catch(Throwable t) {
+					} catch(Throwable t1) {
 					}
 				}
 			}
@@ -198,6 +197,10 @@ public abstract class ModuleManager {
 		this.db.setValue("nametocase." + username.toLowerCase(), username);
 		this.db.setValue("uuidtoname." + uuid.toString(), username);
 		this.db.setValue("nametouuid." + username.toLowerCase(), uuid.toString());
+	}
+
+	public RedisDatabase getDatabase() {
+		return this.db;
 	}
 	
 	public abstract String getImplementationName();

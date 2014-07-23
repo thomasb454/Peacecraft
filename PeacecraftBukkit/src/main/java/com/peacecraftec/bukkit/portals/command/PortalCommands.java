@@ -72,7 +72,7 @@ public class PortalCommands extends Executor {
 			}
 			
 			this.module.getPortalManager().setDestination(args[1], args[2]);
-			sender.sendMessage("portals.dest-put", args[1], args[2]);
+			sender.sendMessage("portals.dest-set", args[1], args[2]);
 		} else if(args[0].equalsIgnoreCase("dir")) {
 			if(args.length < 3) {
 				sender.sendMessage("generic.usage", "/portals dir <portal> <dir>");
@@ -102,7 +102,7 @@ public class PortalCommands extends Executor {
 			}
 			
 			this.module.getPortalManager().setDirection(args[1], face);
-			sender.sendMessage("portals.dir-put", args[1], face.name());
+			sender.sendMessage("portals.dir-set", args[1], face.name());
 		} else if(args[0].equalsIgnoreCase("tp")) {
 			if(!(sender instanceof PlayerSender)) {
 				sender.sendMessage("generic.cannot-use-command");

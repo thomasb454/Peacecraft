@@ -1,21 +1,22 @@
 package com.peacecraftec.web.chat.redis;
 
-import java.util.UUID;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.peacecraftec.module.ModuleManager;
+import com.peacecraftec.redis.RedisDatabase;
 import com.peacecraftec.redis.RedisPubSub;
 import com.peacecraftec.web.chat.data.ChannelAction;
 import com.peacecraftec.web.chat.data.WebMessage;
+
+import java.util.UUID;
 
 public class WebchatPubSub extends RedisPubSub {
 
 	private ModuleManager manager;
 	private RedisWebchatSystem chat;
 	
-	public WebchatPubSub(ModuleManager manager, RedisWebchatSystem chat, String host, String... channels) {
-		super(host, channels);
+	public WebchatPubSub(ModuleManager manager, RedisWebchatSystem chat, RedisDatabase database, String... channels) {
+		super(database, channels);
 		this.manager = manager;
 		this.chat = chat;
 	}

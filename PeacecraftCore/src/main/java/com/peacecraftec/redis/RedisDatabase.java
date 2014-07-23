@@ -1,47 +1,50 @@
 package com.peacecraftec.redis;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Set;
 
 public class RedisDatabase {
-	private Jedis redis;
-	private boolean create;
-	
+	private JedisPool pool;
+
 	public RedisDatabase(String host) {
-		this.redis = new Jedis(host);
-		this.redis.connect();
+		this.pool = new JedisPool(host);
 	}
 	
-	public RedisDatabase(String host, int port) {
-		this.redis = new Jedis(host, port);
-		this.redis.connect();
-	}
-	
-	public Jedis getRedis() {
-		return this.redis;
+	public JedisPool getPool() {
+		return this.pool;
 	}
 	
 	public Set<String> getKeys(String start) {
-		return this.redis.keys(start + ".*");
+		return this.keys(start + ".*");
 	}
 	
 	public Set<String> keys(String query) {
-		return this.redis.keys(query);
+		Jedis jedis = this.pool.getResource();
+		try {
+			return jedis.keys(query);
+		} finally {
+			this.pool.returnResource(jedis);
+		}
 	}
 	
 	public boolean contains(String name) {
-		return this.redis.exists(name);
+		Jedis jedis = this.pool.getResource();
+		try {
+			return jedis.exists(name);
+		} finally {
+			this.pool.returnResource(jedis);
+		}
 	}
 	
 	public String getString(String name) {
-		String result = this.redis.get(name);
-		if(result == null && this.create) {
-			result = "";
-			this.redis.set(name, result);
+		Jedis jedis = this.pool.getResource();
+		try {
+			return jedis.get(name);
+		} finally {
+			this.pool.returnResource(jedis);
 		}
-		
-		return result;
 	}
 
 	public byte getByte(String name) {
@@ -107,16 +110,24 @@ public class RedisDatabase {
 	}
 
 	public void setValue(String name, Object obj) {
+		Jedis jedis = this.pool.getResource();
 		try {
-			this.redis.set(name, obj != null ? obj.toString() : null);
+			jedis.set(name, obj != null ? obj.toString() : null);
 		} catch(Exception e) {
 			System.err.println("Failed to put value at \"" + name + "\" in redis database.");
 			e.printStackTrace();
+		} finally {
+			this.pool.returnResource(jedis);
 		}
 	}
 	
 	public void remove(String name) {
-		this.redis.del(name);
+		Jedis jedis = this.pool.getResource();
+		try {
+			jedis.del(name);
+		} finally {
+			this.pool.returnResource(jedis);
+		}
 	}
 	
 	public RedisSet getSet(String name) {
@@ -132,10 +143,15 @@ public class RedisDatabase {
 	}
 
 	public void cleanup() {
-		this.redis.close();
+		this.pool.destroy();
 	}
 	
 	public void publish(String channel, String message) {
-		this.redis.publish(channel, message);
+		Jedis jedis = this.pool.getResource();
+		try {
+			jedis.publish(channel, message);
+		} finally {
+			this.pool.returnResource(jedis);
+		}
 	}
 }

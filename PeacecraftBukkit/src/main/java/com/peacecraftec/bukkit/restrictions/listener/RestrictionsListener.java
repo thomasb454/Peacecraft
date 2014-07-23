@@ -5,16 +5,16 @@ import com.peacecraftec.bukkit.restrictions.PeacecraftRestrictions;
 import com.peacecraftec.bukkit.restrictions.RestrictionsPermissions;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
 public class RestrictionsListener implements Listener {
@@ -45,15 +45,17 @@ public class RestrictionsListener implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Location to = event.getTo().clone();
 		boolean moved = false;
-		int maxX = this.module.getConfig().getInteger("border." + event.getTo().getWorld().getName() + ".x");
-		int maxZ = this.module.getConfig().getInteger("border." + event.getTo().getWorld().getName() +".z");
+		int minX = this.module.getConfig().getInteger("border." + event.getTo().getWorld().getName() + ".minX");
+		int minZ = this.module.getConfig().getInteger("border." + event.getTo().getWorld().getName() +".minZ");
+		int maxX = this.module.getConfig().getInteger("border." + event.getTo().getWorld().getName() + ".maxX");
+		int maxZ = this.module.getConfig().getInteger("border." + event.getTo().getWorld().getName() +".maxZ");
 		if(to.getX() >= maxX) {
 			to.setX(maxX - 2);
 			moved = true;
 		}
 		
-		if(to.getX() <= -maxX) {
-			to.setX(-maxX + 2);
+		if(to.getX() <= minX) {
+			to.setX(minX + 2);
 			moved = true;
 		}
 		
@@ -62,8 +64,8 @@ public class RestrictionsListener implements Listener {
 			moved = true;
 		}
 		
-		if(to.getZ() <= -maxZ) {
-			to.setZ(-maxZ + 2);
+		if(to.getZ() <= minZ) {
+			to.setZ(minZ + 2);
 			moved = true;
 		}
 		
@@ -81,8 +83,22 @@ public class RestrictionsListener implements Listener {
 	
 	@EventHandler
 	public void onWorldLoad(WorldLoadEvent event) {
-		this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".x", 4000);
-		this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".z", 4000);
+		if(this.module.getConfig().contains("border." + event.getWorld().getName() + ".x")) {
+			int x = this.module.getConfig().getInteger("border." + event.getWorld().getName() + ".x");
+			int z = this.module.getConfig().getInteger("border." + event.getWorld().getName() +".z");
+			this.module.getConfig().setValue("border." + event.getWorld().getName() + ".minX", -x);
+			this.module.getConfig().setValue("border." + event.getWorld().getName() + ".minZ", -z);
+			this.module.getConfig().setValue("border." + event.getWorld().getName() + ".maxX", x);
+			this.module.getConfig().setValue("border." + event.getWorld().getName() + ".maxZ", z);
+			this.module.getConfig().remove("border." + event.getWorld().getName() +".x");
+			this.module.getConfig().remove("border." + event.getWorld().getName() +".z");
+		} else {
+			this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".minX", -4000);
+			this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".minZ", -4000);
+			this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".maxX", 4000);
+			this.module.getConfig().applyDefault("border." + event.getWorld().getName() + ".maxZ", 4000);
+		}
+
 		this.module.getConfig().save();
 	}
 
@@ -107,8 +123,29 @@ public class RestrictionsListener implements Listener {
 	}
 
 	@EventHandler
+	public void onBlockIgnite(BlockIgniteEvent event) {
+		if(event.getCause() == BlockIgniteEvent.IgniteCause.SPREAD || event.getCause() == BlockIgniteEvent.IgniteCause.LAVA) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
 	public void onBlockBurn(BlockBurnEvent event) {
 		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event) {
+		if(event.getEntity() instanceof Player && event.getEntity().getWorld().getName().equals("minigames") || event.getEntity().getWorld().getName().equals("hub")) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onWeatherChange(WeatherChangeEvent event) {
+		if(event.getWorld().getName().equals("hub") || event.getWorld().getName().equals("minigames")) {
+			event.setCancelled(true);
+		}
 	}
 	
 }

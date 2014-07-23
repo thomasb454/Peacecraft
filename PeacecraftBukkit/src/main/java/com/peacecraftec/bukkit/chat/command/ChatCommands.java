@@ -12,11 +12,14 @@ import com.peacecraftec.web.chat.data.ChannelData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class ChatCommands extends Executor {
+	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm");
 	
 	private PeacecraftChat module;
 	
@@ -83,7 +86,7 @@ public class ChatCommands extends Executor {
 			}
 			
 			data.setActiveChannel(channel);
-			player.sendMessage("chat.put-active", channel);
+			player.sendMessage("chat.set-active", channel);
 		}
 	}
 	
@@ -304,6 +307,11 @@ public class ChatCommands extends Executor {
 		this.module.setMuted(player.getName(), false);
 		sender.sendMessage("chat.player-unmuted");
 	}
+
+	@Command(aliases = {"servertime"}, desc = "Gets the current time in the server's timezone.", permission = ChatPermissions.SERVER_TIME)
+	public void servertime(CommandSender sender, String command, String args[]) {
+		sender.sendMessage("chat.current-time", FORMAT.format(new Date()));
+	}
 	
 	private static String join(String split[], String sep) {
 		StringBuilder ret = new StringBuilder();
@@ -314,5 +322,4 @@ public class ChatCommands extends Executor {
 		
 		return ret.toString();
 	}
-	
 }

@@ -148,8 +148,8 @@ public class PermissionGroup {
 			
 			if(perm.endsWith("*")) {
 				String node = perm.substring(0, perm.length() - 1);
-				if(perm.endsWith(".")) {
-					node = node.substring(0, perm.length() - 1);
+				if(node.endsWith(".")) {
+					node = node.substring(0, node.length() - 1);
 				}
 				
 				for(Permission p : known) {

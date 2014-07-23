@@ -108,8 +108,15 @@ public class WorldManager {
 			if(!f.exists() || !f.isDirectory()) {
 				return false;
 			}
-			
-			World w = Bukkit.getServer().createWorld(new WorldCreator(name));
+
+			WorldCreator creator = new WorldCreator(name);
+			if(name.endsWith("_nether")) {
+				creator.environment(Environment.NETHER);
+			} else if(name.endsWith("_the_end")) {
+				creator.environment(Environment.THE_END);
+			}
+
+			World w = Bukkit.getServer().createWorld(creator);
 			name = name.toLowerCase();
 			this.createEntry(w);
 			PeaceWorld world = new PeaceWorld(this.module, this, name, this.data, new File(this.module.getDirectory(), "inventories" + File.separator + name));

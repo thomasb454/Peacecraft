@@ -46,5 +46,8 @@ public class ChatPermissions implements PermissionContainer {
 
 	@Perm(desc = "Allows players to mute other players.")
 	public static final String MUTE = "peacecraft.chat.mute";
+
+	@Perm(desc = "Allows players to view the time in the server's timezone.")
+	public static final String SERVER_TIME = "peacecraft.chat.servertime";
 	
 }

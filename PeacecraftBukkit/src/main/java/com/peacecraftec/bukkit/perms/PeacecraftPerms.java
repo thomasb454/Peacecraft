@@ -32,12 +32,23 @@ public class PeacecraftPerms extends Module {
 	@Override
 	public void onEnable() {
 		this.manager = new PermissionManager(this);
+		this.listen = new PermsListener(this);
 		this.getManager().getPermissionManager().register(this, PermsPermissions.class);
 		this.getManager().getCommandManager().register(this, new PermsCommands(this));
-		this.getManager().getEventManager().register(this, this.listen = new PermsListener(this));
+		this.getManager().getEventManager().register(this, this.listen);
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
 			this.listen.attachTo(player);
 		}
+
+		// Bukkit doesn't add core permissions until after plugins are loaded, so refresh a tick after loading is done.
+		this.getManager().getScheduler().runTaskLater(this, new Runnable() {
+			@Override
+			public void run() {
+				for(Player player : Bukkit.getServer().getOnlinePlayers()) {
+					refreshPermissions(player);
+				}
+			}
+		}, 1);
 		
 		this.getManager().getScheduler().runTaskTimer(this, new Runnable() {
 			@Override

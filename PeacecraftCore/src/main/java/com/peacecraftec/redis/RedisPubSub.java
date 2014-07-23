@@ -4,19 +4,23 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
 public abstract class RedisPubSub {
-	private Jedis conn;
+	private RedisDatabase database;
 	private String channels[];
 	private PeacePubSub internal;
 	
-	public RedisPubSub(String host, String... channels) {
-		this.conn = new Jedis(host);
-		this.conn.connect();
+	public RedisPubSub(RedisDatabase database, String... channels) {
+		this.database = database;
 		this.channels = channels;
 	}
 	
 	public void subscribe() {
 		this.internal = new PeacePubSub(this);
-		this.conn.subscribe(this.internal, this.channels);
+		Jedis jedis = this.database.getPool().getResource();
+		try {
+			jedis.subscribe(this.internal, this.channels);
+		} finally {
+			this.database.getPool().returnResource(jedis);
+		}
 	}
 	
 	public void unsubscribe() {
@@ -24,8 +28,6 @@ public abstract class RedisPubSub {
 			this.internal.unsubscribe();
 			this.internal = null;
 		}
-
-		this.conn.close();
 	}
 	
 	public abstract void recieve(String channel, String message);
