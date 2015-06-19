@@ -8,23 +8,23 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
-	
-	public String[] aliases();
-	
-	public String permission();
 
-	public String usage() default "";
+    public String[] aliases();
 
-	public String desc();
+    public String permission();
 
-	public int min() default 0;
+    public String usage() default "";
 
-	public int max() default -1;
-	
-	public boolean player() default true;
-	
-	public boolean console() default true;
-	
-	public boolean commandblock() default true;
-	
+    public String desc();
+
+    public int min() default 0;
+
+    public int max() default -1;
+
+    public boolean player() default true;
+
+    public boolean console() default true;
+
+    public boolean commandblock() default true;
+
 }

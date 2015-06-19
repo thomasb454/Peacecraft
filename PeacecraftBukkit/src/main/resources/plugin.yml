@@ -1,3 +1,4 @@
-name: Peacecraft
-main: com.peacecraftec.bukkit.Peacecraft
+name: PeacecraftBukkit
+main: com.peacecraftec.bukkit.PeacecraftBukkit
 version: 1.0
+depends: [Vault]

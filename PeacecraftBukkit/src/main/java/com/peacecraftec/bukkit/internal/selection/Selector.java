@@ -6,23 +6,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Selector {
-	private static final Selector INSTANCE = new Selector();
+    private static final Selector INSTANCE = new Selector();
 
-	public static Selector get() {
-		return INSTANCE;
-	}
+    public static Selector get() {
+        return INSTANCE;
+    }
 
-	private Map<String, Selection> selections = new HashMap<String, Selection>();
+    private Map<String, Selection> selections = new HashMap<String, Selection>();
 
-	public Selection getSelection(Player player) {
-		return this.selections.get(player.getName());
-	}
+    private Selector() {
+    }
 
-	public void setSelection(Player player, Selection selection) {
-		this.selections.put(player.getName(), selection);
-	}
+    public Selection getSelection(Player player) {
+        return this.selections.get(player.getName());
+    }
 
-	public void clearPlayer(Player player) {
-		this.selections.remove(player.getName());
-	}
+    public void setSelection(Player player, Selection selection) {
+        this.selections.put(player.getName(), selection);
+    }
+
+    public void clearPlayer(Player player) {
+        this.selections.remove(player.getName());
+    }
 }

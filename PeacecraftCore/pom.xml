@@ -7,11 +7,44 @@
     <version>dev-SNAPSHOT</version>
     <name>PeacecraftCore</name>
     <description>The core library for Peacecraft plugins and modifications.</description>
+
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://www.opensource.org/licenses/mit-license.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:Steveice10/Peacecraft.git</connection>
+        <developerConnection>scm:git:git@github.com:Steveice10/Peacecraft.git</developerConnection>
+        <url>git@github.com:Steveice10/Peacecraft/</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>steveice10</id>
+            <name>Steveice10</name>
+            <email>Steveice10@gmail.com</email>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!-- Dependencies -->
+    <repositories>
+        <repository>
+            <id>spacehq-releases</id>
+            <url>http://repo.spacehq.org/content/repositories/release/</url>
+        </repository>
+        <repository>
+            <id>spacehq-snapshots</id>
+            <url>http://repo.spacehq.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>redis.clients</groupId>
@@ -53,7 +86,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.2</version>
             </plugin>
-            <!-- JAR dependency addition plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

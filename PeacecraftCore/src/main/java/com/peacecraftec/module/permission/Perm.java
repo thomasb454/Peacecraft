@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Perm {
 
-	public String desc();
+    public String desc();
 
-	public PermissionDefault def() default PermissionDefault.OP;
-	
+    public PermissionDefault def() default PermissionDefault.OP;
+
 }

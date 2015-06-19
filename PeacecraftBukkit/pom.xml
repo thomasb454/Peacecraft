@@ -3,31 +3,56 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.peacecraftec</groupId>
-    <artifactId>peacecraft</artifactId>
+    <artifactId>peacecraftbukkit</artifactId>
     <version>dev-SNAPSHOT</version>
-    <name>Peacecraft</name>
+    <name>PeacecraftBukkit</name>
     <description>The custom plugin providing many features for Peacecraft.</description>
+
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://www.opensource.org/licenses/mit-license.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:Steveice10/Peacecraft.git</connection>
+        <developerConnection>scm:git:git@github.com:Steveice10/Peacecraft.git</developerConnection>
+        <url>git@github.com:Steveice10/Peacecraft/</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>steveice10</id>
+            <name>Steveice10</name>
+            <email>Steveice10@gmail.com</email>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!-- Repository locations -->
     <repositories>
         <repository>
-            <id>md-5-snapshots</id>
-            <url>http://repo.md-5.net/content/repositories/snapshots</url>
+            <id>spacehq-releases</id>
+            <url>http://repo.spacehq.org/content/repositories/release/</url>
         </repository>
         <repository>
-            <id>md-5-releases</id>
-            <url>http://repo.md-5.net/content/repositories/releases</url>
+            <id>spacehq-snapshots</id>
+            <url>http://repo.spacehq.org/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>sk89q-repo</id>
-            <url>http://maven.sk89q.com/repo</url>
+            <id>spigotmc</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
         </repository>
     </repositories>
 
-    <!-- Dependencies -->
     <dependencies>
         <dependency>
             <groupId>com.peacecraftec</groupId>
@@ -37,7 +62,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <version>1.8.7-R0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.5</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -59,7 +90,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.2</version>
             </plugin>
-            <!-- JAR dependency addition plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

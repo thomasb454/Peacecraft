@@ -16,171 +16,171 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RedisWebchatSystem implements WebchatSystem {
 
-	private static final String CHANNEL_OUT = "PeacecraftWebChatOut";
-	private static final String CHANNEL_IN = "PeacecraftWebChatIn";
-	
-	private ModuleManager manager;
-	private RedisHashSet passwords;
-	private RedisSet mods;
-	private RedisSet onlinePlayers;
-	private WebchatPubSub pubsub;
-	private List<WebMessage> incoming = new CopyOnWriteArrayList<WebMessage>();
-	private List<ChannelAction> channelActions = new CopyOnWriteArrayList<ChannelAction>();
-	
-	public RedisWebchatSystem(ModuleManager manager) {
-		this.manager = manager;
-		this.passwords = this.manager.getDatabase().getHashSet("webchat.passwords");
-		this.mods = this.manager.getDatabase().getSet("webchat.mods");
-		this.onlinePlayers = this.manager.getDatabase().getSet("webchat.online");
-		for(String uuid : this.onlinePlayers.all()) {
-			this.removeOnlinePlayer(uuid);
-		}
-		
-		new Thread() {
-			public void run() {
-				pubsub = new WebchatPubSub(RedisWebchatSystem.this.manager, RedisWebchatSystem.this, RedisWebchatSystem.this.manager.getDatabase(), CHANNEL_IN);
-				pubsub.subscribe();
-			}
-		}.start();
-	}
-	
-	@Override
-	public void send(WebMessage message) {
-		try {
-			JsonObject json = new JsonObject();
-			json.addProperty("type", "chat");
-			UUID uuid = this.manager.getUUID(message.getPlayer());
-			json.addProperty("player", message.getPlayer());
-			json.addProperty("uuid", uuid != null ? uuid.toString() : null);
-			json.addProperty(message.isToChannel() ? "channel" : "to", message.getTo());
-			json.addProperty("message", message.getMessage());
-			this.manager.getDatabase().publish(CHANNEL_OUT, json.toString());
-		} catch(Exception e) {
-			System.err.println("Failed to publish chat message to webchat!");
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void broadcast(String message) {
-		this.send(new WebMessage("server", null, message, true));
-	}
-	
-	@Override
-	public void broadcast(String message, String channel) {
-		this.send(new WebMessage("server", channel, message, true));
-	}
-	
-	@Override
-	public void sendMessage(String message, String player) {
-		this.send(new WebMessage("server", player, message, false));
-	}
+    private static final String CHANNEL_OUT = "PeacecraftWebChatOut";
+    private static final String CHANNEL_IN = "PeacecraftWebChatIn";
 
-	@Override
-	public List<WebMessage> getIncoming() {
-		List<WebMessage> ret = new ArrayList<WebMessage>(this.incoming);
-		this.incoming.removeAll(ret);
-		return ret;
-	}
-	
-	@Override
-	public void send(ChannelAction action) {
-		try {
-			JsonObject json = new JsonObject();
-			json.addProperty("type", "channel");
-			UUID uuid = this.manager.getUUID(action.getPlayer());
-			json.addProperty("player", action.getPlayer());
-			json.addProperty("uuid", uuid != null ? uuid.toString() : null);
-			json.addProperty("channel", action.getChannel());
-			json.addProperty("action", action.getAction().name().toLowerCase());
-			this.manager.getDatabase().publish(CHANNEL_OUT, json.toString());
-		} catch(Exception e) {
-			System.err.println("Failed to publish channel action to webchat!");
-			e.printStackTrace();
-		}
-	}
+    private ModuleManager manager;
+    private RedisHashSet passwords;
+    private RedisSet mods;
+    private RedisSet onlinePlayers;
+    private WebchatPubSub pubsub;
+    private List<WebMessage> incoming = new CopyOnWriteArrayList<WebMessage>();
+    private List<ChannelAction> channelActions = new CopyOnWriteArrayList<ChannelAction>();
 
-	@Override
-	public List<ChannelAction> getChannelActions() {
-		List<ChannelAction> ret = new ArrayList<ChannelAction>(this.channelActions);
-		this.channelActions.removeAll(ret);
-		return ret;
-	}
-	
-	@Override
-	public ChannelData getChannelData(String player) {
-		UUID uuid = this.manager.getUUID(player);
-		if(uuid == null) {
-			return null;
-		}
-		
-		return new RedisChannelData(this.manager, this, this.manager.getDatabase(), uuid);
-	}
-	
-	public void addIncoming(WebMessage message) {
-		this.incoming.add(message);
-	}
-	
-	public void addChannelAction(ChannelAction action) {
-		this.channelActions.add(action);
-	}
+    public RedisWebchatSystem(ModuleManager manager) {
+        this.manager = manager;
+        this.passwords = this.manager.getDatabase().getHashSet("webchat.passwords");
+        this.mods = this.manager.getDatabase().getSet("webchat.mods");
+        this.onlinePlayers = this.manager.getDatabase().getSet("webchat.online");
+        for(String uuid : this.onlinePlayers.all()) {
+            this.removeOnlinePlayer(uuid);
+        }
 
-	@Override
-	public String setPassword(String user, String pass) {
-		UUID uuid = this.manager.getUUID(user);
-		if(uuid != null) {
-			this.passwords.put(uuid.toString(), BCrypt.hashpw(pass, BCrypt.gensalt(10)));
-		}
-		
-		return pass;
-	}
-	
-	@Override
-	public boolean isMod(String user) {
-		UUID uuid = this.manager.getUUID(user);
-		if(uuid == null) {
-			return false;
-		}
-		
-		return this.mods.contains(uuid.toString());
-	}
-	
-	@Override
-	public void setMod(String user, boolean mod) {
-		UUID uuid = this.manager.getUUID(user);
-		if(uuid != null) {
-			if(mod && !this.mods.contains(uuid.toString())) {
-				this.mods.add(uuid.toString());
-			} else if(!mod && this.mods.contains(uuid.toString())) {
-				this.mods.remove(uuid.toString());
-			}
-		}
-	}
+        new Thread() {
+            public void run() {
+                pubsub = new WebchatPubSub(RedisWebchatSystem.this.manager, RedisWebchatSystem.this, RedisWebchatSystem.this.manager.getDatabase(), CHANNEL_IN);
+                pubsub.subscribe();
+            }
+        }.start();
+    }
 
-	@Override
-	public void cleanup() {
-		for(String uuid : this.onlinePlayers.all()) {
-			this.onlinePlayers.remove(uuid);
-		}
-		
-		this.pubsub.unsubscribe();
-		this.pubsub = null;
-	}
+    @Override
+    public void send(WebMessage message) {
+        try {
+            JsonObject json = new JsonObject();
+            json.addProperty("type", "chat");
+            UUID uuid = this.manager.getUUID(message.getPlayer());
+            json.addProperty("player", message.getPlayer());
+            json.addProperty("uuid", uuid != null ? uuid.toString() : null);
+            json.addProperty(message.isToChannel() ? "channel" : "to", message.getTo());
+            json.addProperty("message", message.getMessage());
+            this.manager.getDatabase().publish(CHANNEL_OUT, json.toString());
+        } catch(Exception e) {
+            System.err.println("[PeacecraftCore] Failed to publish chat message to webchat!");
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void addOnlinePlayer(String player) {
-		UUID uuid = this.manager.getUUID(player);
-		if(uuid != null) {
-			this.onlinePlayers.add(uuid.toString());
-		}
-	}
+    @Override
+    public void broadcast(String message) {
+        this.send(new WebMessage("server", null, message, true));
+    }
 
-	@Override
-	public void removeOnlinePlayer(String player) {
-		UUID uuid = this.manager.getUUID(player);
-		if(uuid != null) {
-			this.onlinePlayers.remove(uuid.toString());
-		}
-	}
+    @Override
+    public void broadcast(String message, String channel) {
+        this.send(new WebMessage("server", channel, message, true));
+    }
+
+    @Override
+    public void sendMessage(String message, String player) {
+        this.send(new WebMessage("server", player, message, false));
+    }
+
+    @Override
+    public List<WebMessage> getIncoming() {
+        List<WebMessage> ret = new ArrayList<WebMessage>(this.incoming);
+        this.incoming.removeAll(ret);
+        return ret;
+    }
+
+    @Override
+    public void send(ChannelAction action) {
+        try {
+            JsonObject json = new JsonObject();
+            json.addProperty("type", "channel");
+            UUID uuid = this.manager.getUUID(action.getPlayer());
+            json.addProperty("player", action.getPlayer());
+            json.addProperty("uuid", uuid != null ? uuid.toString() : null);
+            json.addProperty("channel", action.getChannel());
+            json.addProperty("action", action.getAction().name().toLowerCase());
+            this.manager.getDatabase().publish(CHANNEL_OUT, json.toString());
+        } catch(Exception e) {
+            System.err.println("[PeacecraftCore] Failed to publish channel action to webchat!");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<ChannelAction> getChannelActions() {
+        List<ChannelAction> ret = new ArrayList<ChannelAction>(this.channelActions);
+        this.channelActions.removeAll(ret);
+        return ret;
+    }
+
+    @Override
+    public ChannelData getChannelData(String player) {
+        UUID uuid = this.manager.getUUID(player);
+        if(uuid == null) {
+            return null;
+        }
+
+        return new RedisChannelData(this.manager, this, this.manager.getDatabase(), uuid);
+    }
+
+    public void addIncoming(WebMessage message) {
+        this.incoming.add(message);
+    }
+
+    public void addChannelAction(ChannelAction action) {
+        this.channelActions.add(action);
+    }
+
+    @Override
+    public String setPassword(String user, String pass) {
+        UUID uuid = this.manager.getUUID(user);
+        if(uuid != null) {
+            this.passwords.put(uuid.toString(), BCrypt.hashpw(pass, BCrypt.gensalt(10)));
+        }
+
+        return pass;
+    }
+
+    @Override
+    public boolean isMod(String user) {
+        UUID uuid = this.manager.getUUID(user);
+        if(uuid == null) {
+            return false;
+        }
+
+        return this.mods.contains(uuid.toString());
+    }
+
+    @Override
+    public void setMod(String user, boolean mod) {
+        UUID uuid = this.manager.getUUID(user);
+        if(uuid != null) {
+            if(mod && !this.mods.contains(uuid.toString())) {
+                this.mods.add(uuid.toString());
+            } else if(!mod && this.mods.contains(uuid.toString())) {
+                this.mods.remove(uuid.toString());
+            }
+        }
+    }
+
+    @Override
+    public void cleanup() {
+        for(String uuid : this.onlinePlayers.all()) {
+            this.onlinePlayers.remove(uuid);
+        }
+
+        this.pubsub.unsubscribe();
+        this.pubsub = null;
+    }
+
+    @Override
+    public void addOnlinePlayer(String player) {
+        UUID uuid = this.manager.getUUID(player);
+        if(uuid != null) {
+            this.onlinePlayers.add(uuid.toString());
+        }
+    }
+
+    @Override
+    public void removeOnlinePlayer(String player) {
+        UUID uuid = this.manager.getUUID(player);
+        if(uuid != null) {
+            this.onlinePlayers.remove(uuid.toString());
+        }
+    }
 
 }
